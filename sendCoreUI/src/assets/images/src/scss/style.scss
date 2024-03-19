@@ -1,0 +1,41 @@
+// If you want to override variables do it here
+@import "variables";
+
+$enable-ltr: true;
+$enable-rtl: true;
+
+// Import CoreUI for React components library
+@import "@coreui/coreui/scss/coreui";
+
+// Import Chart.js custom tooltips styles
+@import "@coreui/chartjs/scss/coreui-chartjs";
+
+@import "layout";
+@import "example";
+
+// If you want to add custom CSS you can put it here.
+@import "custom";
+
+.simplebar-content {
+    background: #1A3A6A;
+}
+
+.sidebar-nav {
+    background: #1A3A6A;
+}
+
+.sidebar-nav .nav-link {
+    color: #fff;
+}
+
+.sidebar-toggler {
+    background-color: #1A3A6A;
+}
+
+.card-header {
+    background-color: transparent !important;
+}
+
+.sidebar-brand {
+    background: #1A3A6A;
+}
