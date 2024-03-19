@@ -1,0 +1,12 @@
+import './linearicons.css';
+import './font-awesome.min.css';
+import './themify-icons.css';
+import './bootstrap.css';
+import './owl.carousel.css';
+import './nice-select.css';
+import './nouislider.min.css';
+import './ion.rangeSlider.css';
+import './ion.rangeSlider.skinFlat.css';
+import './magnific-popup.css';
+import './main.css';
+// import './scss/theme/';
