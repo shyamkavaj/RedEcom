@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import OwlCarousel from 'react-owl-carousel';
 import banner_img from '../img/banner/banner-bg.jpg';
 import 'owl.carousel/dist/assets/owl.carousel.css';
@@ -6,12 +6,15 @@ import 'owl.carousel/dist/assets/owl.theme.default.css';
 import banner_img1 from '../img/banner/banner-img.png';
 import banner_img2 from '../img/banner/banner-img-2.png';
 import banner_img3 from '../img/banner/banner-img-3.png';
-import prev from '../img/banner/prev.png'
-import next from '../img/banner/next.png'
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useSelector } from "react-redux";
+import { NavLink } from 'react-router-dom';
+
 
 
 const Banner_Feature = () => {
+
+
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [headerHeight, setHeaderHeight] = useState(0);
     const [fullscreenHeight, setFullscreenHeight] = useState(0);
@@ -39,13 +42,28 @@ const Banner_Feature = () => {
         setFitscreenHeight(windowHeight - headerHeight);
     }, [windowHeight, headerHeight]);
 
+
+    const { products } = useSelector(state => state.product)
+    const Result = products.filter((item) => { return item.place == "Main carousel" })
+    // console.log("Banner Product", products)
+    // console.log("Banner Result", Result)
+
+
     return (
         <div>
             <div>
                 {/* start banner Area */}
-                <section className="banner-area">
+                {/* {
+                    Result && Result.map((item) => {
+                        return (
+                            <> */}
+                <section section className="banner-area" >
                     <div className="container">
-                        <div className="row fullscreen align-items-center justify-content-start"  style={{ height: fullscreenHeight }}>
+                        <div className="row fullscreen align-items-center justify-content-start"
+                            style={{
+                                height: fullscreenHeight
+                            }}>
+
                             <div className="col-lg-12">
                                 <OwlCarousel
                                     className="owl-theme"
@@ -58,68 +76,40 @@ const Banner_Feature = () => {
                                     // navText={["<img src='img/banner/prev.png'>", "<img src='img/banner/next.png'>"]}
                                     dots={true}
                                 >
-                                    <div className="row single-slide align-items-center d-flex">
-                                        <div className="col-lg-5 col-md-6">
-                                            <div className="banner-content">
-                                                <h1>Nike New <br />Collection!</h1>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                                                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
-                                                <div className="add-bag d-flex align-items-center">
-                                                    <a className="add-btn" href><span className="lnr lnr-cross" /></a>
-                                                    <span className="add-text text-uppercase">Add to Bag</span>
+                                    {
+                                        Result && Result.map((item, index) => {
+                                            return (
+                                                <div className="row single-slide align-items-center d-flex">
+                                                    <div className="col-lg-5 col-md-6">
+                                                        <div className="banner-content">
+                                                            <h1>{item.name}<br />Collection!</h1>
+                                                            <p>{item.description}</p>
+                                                            <div className="add-bag d-flex align-items-center">
+                                                                <NavLink className="add-btn" to='/procategory'><span className="lnr lnr-cross" /></NavLink>
+                                                                <span className="add-text text-uppercase">View More</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-7">
+                                                        <div className="banner-img">
+                                                            <img className="img-fluid" src={process.env.REACT_APP_IMG_URL + item?.image[0]} alt={item.image[0]} />
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-7">
-                                            <div className="banner-img">
-                                                <img className="img-fluid" src={banner_img1} alt="Banner-image" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row single-slide align-items-center d-flex">
-                                        <div className="col-lg-5 col-md-6">
-                                            <div className="banner-content">
-                                                <h1>Puma New <br />Collection!</h1>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                                                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
-                                                <div className="add-bag d-flex align-items-center">
-                                                    <a className="add-btn" href><span className="lnr lnr-cross" /></a>
-                                                    <span className="add-text text-uppercase">Add to Bag</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-7">
-                                            <div className="banner-img">
-                                                <img className="img-fluid" src={banner_img2} alt="Banner-image" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row single-slide align-items-center d-flex">
-                                        <div className="col-lg-5 col-md-6">
-                                            <div className="banner-content">
-                                                <h1>Campus New <br />Collection!</h1>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                                                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
-                                                <div className="add-bag d-flex align-items-center">
-                                                    <a className="add-btn" href><span className="lnr lnr-cross" /></a>
-                                                    <span className="add-text text-uppercase">Add to Bag</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-7">
-                                            <div className="banner-img">
-                                                <img className="img-fluid" src={banner_img3} alt="Banner-image" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                            )
+                                        })
+                                    }
                                 </OwlCarousel>
                             </div>
                         </div>
                     </div>
                 </section>
-                {/* End banner Area */}
+                {/* </>
+                        )
+                    })
+                } */}
             </div>
-
+            {/* End banner Area */}
         </div>
     )
 }

@@ -1,6 +1,75 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { NavLink, json, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllProduct, getProductById } from '../RTK/Slice/productSlice';
+import { useNavigate } from "react-router-dom";
 
 const Card = () => {
+
+    const navigate = useNavigate();
+    const [Quantity, setQuantity] = useState(1);
+    const dispatch = useDispatch()
+
+    // var result;
+    // useEffect(()=>{
+    //     console.log("card catd  ")
+    //     dispatch(getAllProduct())
+    //     // result = data?.map((p) => {
+    //     //     return products?.find((product) => p?.product_id == product.id)
+    //     // })
+    // },[dispatch])
+    // variable
+    var Total = 0;
+    var TotalItem = 0;
+
+
+    var data = JSON.parse(sessionStorage.getItem('cart'))
+    if (data == null) {
+        alert("Now! Cart is empty")
+        navigate('/')
+    }
+
+
+    // console.log('data is ', data)
+    const { products } = useSelector(state => state.product)
+    // console.log('product ssss ', products)
+    // const result = products?.filter((p) => {
+    //     return data.includes(p?.id)
+    // })
+
+    var result = data?.map((p) => {
+        return products?.find((product) => p?.product_id == product.id)
+    })
+    // console.log("result ", result)
+    const handleIncrement = (id) => {
+        const d = sessionStorage.getItem('cart')
+        const again_data = JSON.parse(d);
+        const item = again_data?.find((product) => product.product_id === id)
+        if (item.Qnty < 10) {
+            item.Qnty = item.Qnty + 1;
+            setQuantity(item.Qnty)
+            sessionStorage.setItem("cart", JSON.stringify(again_data))
+        }
+    }
+
+    const handleDecrement = (id) => {
+        const d = sessionStorage.getItem('cart')
+        const again_data = JSON.parse(d);
+        const item = again_data?.find((product) => product.product_id === id)
+        if (item.Qnty >= 2) {
+            item.Qnty = item.Qnty - 1;
+            setQuantity(item.Qnty)
+            sessionStorage.setItem("cart", JSON.stringify(again_data))
+        } else {
+            sessionStorage.setItem("cart", JSON.stringify(again_data?.filter((product) => product.product_id !== id)))
+            if (sessionStorage.getItem('TotalQnty') == 1) {
+                sessionStorage.clear('TotalQnty')
+            }
+            navigate("/cart")
+        }
+    }
+
+
     return (
         <div>
             <section className="banner-area organic-breadcrumb">
@@ -9,8 +78,10 @@ const Card = () => {
                         <div className="col-first">
                             <h1>Shopping Cart</h1>
                             <nav className="d-flex align-items-center">
-                                <a href="index.html">Home<span className="lnr lnr-arrow-right" /></a>
-                                <a href="category.html">Cart</a>
+                                {/* <a href="index.html">Home<span className="lnr lnr-arrow-right" /></a> */}
+                                <NavLink className='nav-link' to={'/'}>Home</NavLink>
+                                <div className='text-light lnr lnr-arrow-right'></div>
+                                <NavLink className='nav-link' to={'/cart'}>Cart</NavLink>
                             </nav>
                         </div>
                     </div>
@@ -30,96 +101,76 @@ const Card = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    {result && result?.map((product, index) => {
+                                        {/* console.log("pro ", product) */}
+                                        {/* const products = JSON.parse(sessionStorage.getItem("cart")) */ }
+                                        {/* console.log('products is is ',products) */ }
+                                        const item = data?.find((pro) => pro.product_id == product?.id)
+                                        {/* console.log('item is is ===========', item) */}
+                                        {/* Total = Total + product.price; */ }
+
+                                        Total = Total + item?.Qnty * product?.price
+                                        TotalItem = TotalItem + item?.Qnty
+                                        {/* console.log("555555",TotalItem) */ }
+                                        sessionStorage.setItem('TotalQnty', `${TotalItem}`);
+
+                                        return (
+                                            <tr>
+                                                <td>
+                                                    <div className="media">
+                                                        <div className="d-flex">
+                                                            <img
+                                                                src={process.env.REACT_APP_IMG_URL + product?.image[0]}
+                                                                alt={product?.name}
+                                                                width={50}
+                                                                height={50}
+                                                            />
+                                                        </div>
+                                                        <div className="media-body">
+                                                            <p>{product?.name}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <h5>₹{product?.price}</h5>
+                                                </td>
+                                                <td>
+                                                    <div className="product_count">
+                                                        <input type="text" name="qty" id="sst"
+                                                            title="Quantity" className="input-text qty"
+                                                            value={item?.Qnty}
+                                                        />
+                                                        {/* <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;" className="increase items-count" type="button"><i className="lnr lnr-chevron-up" /></button> */}
+                                                        {/* <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) && sst > 0 ) result.value--;return false;" className="reduced items-count" type="button"><i className="lnr lnr-chevron-down" /></button> */}
+                                                        <button
+                                                            onClick={() => {
+                                                                handleIncrement(product?.id)
+                                                            }}
+                                                            className="increase items-count" type="button"><i className="lnr lnr-chevron-up fa fa-plus" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                handleDecrement(product?.id)
+                                                            }}
+                                                            className="reduced items-count" type="button"><i className="lnr lnr-chevron-down fa fa-minus " />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <h5>₹<span className='ml-1'>{product?.price * item?.Qnty}</span></h5>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                    <tr tr className="bottom_button" >
                                         <td>
-                                            <div className="media">
-                                                <div className="d-flex">
-                                                    <img src="img/cart.jpg" alt />
-                                                </div>
-                                                <div className="media-body">
-                                                    <p>Minimalistic shop for multipurpose use</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5>$360.00</h5>
-                                        </td>
-                                        <td>
-                                            <div className="product_count">
-                                                <input type="text" name="qty" id="sst" maxLength={12} defaultValue={1} title="Quantity:" className="input-text qty" />
-                                                <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;" className="increase items-count" type="button"><i className="lnr lnr-chevron-up" /></button>
-                                                <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) && sst > 0 ) result.value--;return false;" className="reduced items-count" type="button"><i className="lnr lnr-chevron-down" /></button>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5>$720.00</h5>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div className="media">
-                                                <div className="d-flex">
-                                                    <img src="img/cart.jpg" alt />
-                                                </div>
-                                                <div className="media-body">
-                                                    <p>Minimalistic shop for multipurpose use</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5>$360.00</h5>
-                                        </td>
-                                        <td>
-                                            <div className="product_count">
-                                                <input type="text" name="qty" id="sst" maxLength={12} defaultValue={1} title="Quantity:" className="input-text qty" />
-                                                <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;" className="increase items-count" type="button"><i className="lnr lnr-chevron-up" /></button>
-                                                <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) && sst > 0 ) result.value--;return false;" className="reduced items-count" type="button"><i className="lnr lnr-chevron-down" /></button>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5>$720.00</h5>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div className="media">
-                                                <div className="d-flex">
-                                                    <img src="img/cart.jpg" alt />
-                                                </div>
-                                                <div className="media-body">
-                                                    <p>Minimalistic shop for multipurpose use</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5>$360.00</h5>
-                                        </td>
-                                        <td>
-                                            <div className="product_count">
-                                                <input type="text" name="qty" id="sst" maxLength={12} defaultValue={1} title="Quantity:" className="input-text qty" />
-                                                <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;" className="increase items-count" type="button"><i className="lnr lnr-chevron-up" /></button>
-                                                <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) && sst > 0 ) result.value--;return false;" className="reduced items-count" type="button"><i className="lnr lnr-chevron-down" /></button>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5>$720.00</h5>
-                                        </td>
-                                    </tr>
-                                    <tr className="bottom_button">
-                                        <td>
-                                            <a className="gray_btn" href="#">Update Cart</a>
+                                            {/* <a className="gray_btn" href="#">Update Cart</a> */}
                                         </td>
                                         <td>
                                         </td>
                                         <td>
                                         </td>
-                                        {/* <td>
-                                            <div className="cupon_text d-flex align-items-center">
-                                                <input type="text" placeholder="Coupon Code" />
-                                                <a className="primary-btn" href="#">Apply</a>
-                                                <a className="gray_btn" href="#">Close Coupon</a>
-                                            </div>
-                                        </td> */}
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -127,57 +178,30 @@ const Card = () => {
                                         <td>
                                         </td>
                                         <td>
-                                            <h5>Subtotal</h5>
+                                            <h5><b>Total</b></h5>
                                         </td>
                                         <td>
-                                            <h5>$2160.00</h5>
+                                            <h5><b>₹<span className='ml-1'>{Total}</span></b></h5>
                                         </td>
                                     </tr>
-                                    <tr className="shipping_area">
-                                        <td>
-                                        </td>
-                                        <td>
-                                        </td>
-                                        <td>
-                                            <h5>Shipping</h5>
-                                        </td>
-                                        <td>
-                                            <div className="shipping_box">
-                                                <ul className="list">
-                                                    <li><a href="#">Flat Rate: $5.00</a></li>
-                                                    <li><a href="#">Free Shipping</a></li>
-                                                    <li><a href="#">Flat Rate: $10.00</a></li>
-                                                    <li className="active"><a href="#">Local Delivery: $2.00</a></li>
-                                                </ul>
-                                                <h6>Calculate Shipping <i className="fa fa-caret-down" aria-hidden="true" /></h6>
-                                                <select className="shipping_select">
-                                                    <option value={1}>Bangladesh</option>
-                                                    <option value={2}>India</option>
-                                                    <option value={4}>Pakistan</option>
-                                                </select>
-                                                <select className="shipping_select">
-                                                    <option value={1}>Select a State</option>
-                                                    <option value={2}>Select a State</option>
-                                                    <option value={4}>Select a State</option>
-                                                </select>
-                                                <input type="text" placeholder="Postcode/Zipcode" />
-                                                <a className="gray_btn" href="#">Update Details</a>
-                                            </div>
-                                        </td>
+                                    <tr>
+
                                     </tr>
+                                    
                                     <tr className="out_button_area">
                                         <td>
                                         </td>
-                                        <td>
+                                        {/* <td>
                                         </td>
                                         <td>
-                                        </td>
-                                        <td>
+                                        </td> */}
+                                        <td colSpan={3}>
                                             <div className="checkout_btn_inner d-flex align-items-center">
-                                                <a className="gray_btn" href="#">Continue Shopping</a>
-                                                <a className="primary-btn" href="#">Proceed to checkout</a>
+                                                <NavLink to='/procategory' className="gray_btn">Continue Shopping</NavLink>
+                                                <NavLink to='/checkout' className="primary-btn">Proceed to checkout</NavLink>
                                             </div>
                                         </td>
+                                        <td></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -186,8 +210,7 @@ const Card = () => {
                 </div>
             </section>
         </div>
-
     )
 }
 
-export default Card
+export default Card;

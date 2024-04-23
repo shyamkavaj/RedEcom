@@ -8,12 +8,11 @@ const sendEmail = (receivers,subject,message)=>{
         secure: true, // upgrade later with
         service:'gmail',
         auth:{
-            user:'bhuvaharikrushn4315@gmail.com',
-            pass: 'tcaxpkljexiotrkl'
+            user:'shyamkava783@gmail.com',
+            pass: 'vxecqpxvzcvbvmte'
         }
     });
     
-
     var info = {
         from:'bhuvaharikrushn4315@gmail.com', // sender address
         to:receivers,// list of receivers

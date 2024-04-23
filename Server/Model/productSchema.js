@@ -23,7 +23,13 @@ module.exports = (sequelize,DataTypes) => {
         image:{
             type:DataTypes.JSON,
             allowNull:false
-        }
+        },
+        place:{
+            type:DataTypes.ENUM,
+            values:["Regular","Hot deal","Main carousel","Week deal"],
+            defaultValue:"Regular"
+            // defaultValue:"regular"
+        },
     })
     return Product;
 }

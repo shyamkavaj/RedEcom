@@ -1,6 +1,52 @@
-import React from 'react'
+import React, {  useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+// import { getAllCate } from '../RTK/Slice/cateSlice';
+// import { getAllSubCat } from '../RTK/Slice/subcateSlice';
+import { getAllProduct, getAllProductByCate, getAllProductByCateAndSub } from '../RTK/Slice/productSlice';
+import { NavLink } from 'react-router-dom';
+import Faq from './Faq';
 
-const shop_Category = () => {
+const Shop_Category = () => {
+    // console.log("props data ",data.data)
+    const dispatch = useDispatch();
+    // const [show, setShow] = React.useState(false);
+    const [catId, setcateId] = React.useState();
+    const [scId, setscId] = React.useState();
+
+
+
+    const { categories } = useSelector((state) => state.category);
+    const { subcate } = useSelector(state => state.subcate);
+    const { products } = useSelector(state => state.product)
+
+    const Result = products.filter((item) => {
+        return item.place === "Regular" || item.place === "Week deal";
+    });
+
+    const handleSelect = (id) => {
+        // console.log("id", id);
+        dispatch(getAllProductByCate(id))
+        setcateId(id);
+    }
+
+    const handleSubCatSelect = (id, categ) => {
+        const data = {
+            id: id,
+            categ: categ
+        }
+        dispatch(getAllProductByCateAndSub(data))
+        setscId(id);
+    }
+    const [currentPage, setCurrentPage] = useState(1)
+    const [postsPerPage, setPostsPerPage] = useState(6)
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = Result.slice(indexOfFirstPost, indexOfLastPost);
+    const totalPage = Math.ceil(Result.length / postsPerPage);
+
+    const [activePro, setActivePro] = useState(1)
+    const [active, setActive] = useState()
+    const [activesub, setActiveSub] = useState()
     return (
         <div>
             <section className="banner-area organic-breadcrumb">
@@ -9,9 +55,11 @@ const shop_Category = () => {
                         <div className="col-first">
                             <h1>Shop Category page</h1>
                             <nav className="d-flex align-items-center">
-                                <a href="index.html">Home<span className="lnr lnr-arrow-right" /></a>
-                                <a href="#">Shop<span className="lnr lnr-arrow-right" /></a>
-                                <a href="category.html">Fashon Category</a>
+                                <NavLink className='nav-link' to={'/'}>Home</NavLink>
+                                <div className='text-light lnr lnr-arrow-right'></div>
+                                <NavLink className='nav-link' to={'/procategory'}>Shop</NavLink>
+                                <div className='text-light lnr lnr-arrow-right'></div>
+                                <NavLink className='nav-link' to={'/procategory'}>Shop Category</NavLink>
                             </nav>
                         </div>
                     </div>
@@ -23,395 +71,220 @@ const shop_Category = () => {
                         <div className="sidebar-categories">
                             <div className="head">Browse Categories</div>
                             <ul className="main-categories">
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#fruitsVegetable" aria-expanded="false" aria-controls="fruitsVegetable"><span className="lnr lnr-arrow-right" />Fruits and Vegetables<span className="number">(53)</span></a>
-                                    <ul className="collapse" id="fruitsVegetable" data-toggle="collapse" aria-expanded="false" aria-controls="fruitsVegetable">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
+                                <li className={`main-nav-list ${activePro === 1 ? "active-cate" : ""}`} onClick={() => {
+                                    setActivePro(1)
+                                    setActive(null)
+                                    setActiveSub(null)
+                                    // console.log("show ", item.id)
+                                    dispatch(getAllProduct())
+                                    setscId(null)
+                                    setcateId(null)
+                                    setCurrentPage(1)
+                                }}>
+                                    <a aria-expanded="false" aria-controls="fruitsVegetable">
+                                        <span className="lnr lnr-arrow-right" />
+                                        All Product
+                                        {activePro === 1 ? <span className="number">({Result.length})</span> : <></>}
+                                    </a>
                                 </li>
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#meatFish" aria-expanded="false" aria-controls="meatFish"><span className="lnr lnr-arrow-right" />Meat and Fish<span className="number">(53)</span></a>
-                                    <ul className="collapse" id="meatFish" data-toggle="collapse" aria-expanded="false" aria-controls="meatFish">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#cooking" aria-expanded="false" aria-controls="cooking"><span className="lnr lnr-arrow-right" />Cooking<span className="number">(53)</span></a>
-                                    <ul className="collapse" id="cooking" data-toggle="collapse" aria-expanded="false" aria-controls="cooking">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#beverages" aria-expanded="false" aria-controls="beverages"><span className="lnr lnr-arrow-right" />Beverages<span className="number">(24)</span></a>
-                                    <ul className="collapse" id="beverages" data-toggle="collapse" aria-expanded="false" aria-controls="beverages">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#homeClean" aria-expanded="false" aria-controls="homeClean"><span className="lnr lnr-arrow-right" />Home and Cleaning<span className="number">(53)</span></a>
-                                    <ul className="collapse" id="homeClean" data-toggle="collapse" aria-expanded="false" aria-controls="homeClean">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li className="main-nav-list"><a href="#">Pest Control<span className="number">(24)</span></a></li>
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#officeProduct" aria-expanded="false" aria-controls="officeProduct"><span className="lnr lnr-arrow-right" />Office Products<span className="number">(77)</span></a>
-                                    <ul className="collapse" id="officeProduct" data-toggle="collapse" aria-expanded="false" aria-controls="officeProduct">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#beauttyProduct" aria-expanded="false" aria-controls="beauttyProduct"><span className="lnr lnr-arrow-right" />Beauty Products<span className="number">(65)</span></a>
-                                    <ul className="collapse" id="beauttyProduct" data-toggle="collapse" aria-expanded="false" aria-controls="beauttyProduct">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#healthProduct" aria-expanded="false" aria-controls="healthProduct"><span className="lnr lnr-arrow-right" />Health Products<span className="number">(29)</span></a>
-                                    <ul className="collapse" id="healthProduct" data-toggle="collapse" aria-expanded="false" aria-controls="healthProduct">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li className="main-nav-list"><a href="#">Pet Care<span className="number">(29)</span></a></li>
-                                <li className="main-nav-list"><a data-toggle="collapse" href="#homeAppliance" aria-expanded="false" aria-controls="homeAppliance"><span className="lnr lnr-arrow-right" />Home Appliances<span className="number">(15)</span></a>
-                                    <ul className="collapse" id="homeAppliance" data-toggle="collapse" aria-expanded="false" aria-controls="homeAppliance">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li className="main-nav-list"><a className="border-bottom-0" data-toggle="collapse" href="#babyCare" aria-expanded="false" aria-controls="babyCare"><span className="lnr lnr-arrow-right" />Baby Care<span className="number">(48)</span></a>
-                                    <ul className="collapse" id="babyCare" data-toggle="collapse" aria-expanded="false" aria-controls="babyCare">
-                                        <li className="main-nav-list child"><a href="#">Frozen Fish<span className="number">(13)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Dried Fish<span className="number">(09)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Fresh Fish<span className="number">(17)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#">Meat Alternatives<span className="number">(01)</span></a></li>
-                                        <li className="main-nav-list child"><a href="#" className="border-bottom-0">Meat<span className="number">(11)</span></a></li>
-                                    </ul>
-                                </li>
+                                {categories.map((item) =>
+                                    <li className={`main-nav-list ${active === item.id ? "active-cate" : ""}`} onClick={() => {
+                                        // console.log("show ", item.id)
+                                        setActive(item.id)
+                                        setActivePro(null)
+                                        handleSelect(item.id)
+                                        setCurrentPage(1)
+                                    }}>
+                                        <a aria-expanded="false" aria-controls="fruitsVegetable">
+                                            <span className="lnr lnr-arrow-right" />
+                                            {item.name}
+                                            {active === item.id ? <span className="number">({Result.length})</span> : <></>}
+                                        </a>
+                                    </li>
+                                )}
                             </ul>
                         </div>
-                        <div className="sidebar-filter mt-50">
-                            <div className="top-filter-head">Product Filters</div>
-                            <div className="common-filter">
-                                <div className="head">Brands</div>
-                                <form action="#">
-                                    <ul>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="apple" name="brand" /><label htmlFor="apple">Apple<span>(29)</span></label></li>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="asus" name="brand" /><label htmlFor="asus">Asus<span>(29)</span></label></li>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="gionee" name="brand" /><label htmlFor="gionee">Gionee<span>(19)</span></label></li>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="micromax" name="brand" /><label htmlFor="micromax">Micromax<span>(19)</span></label></li>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="samsung" name="brand" /><label htmlFor="samsung">Samsung<span>(19)</span></label></li>
-                                    </ul>
-                                </form>
-                            </div>
-                            <div className="common-filter">
-                                <div className="head">Color</div>
-                                <form action="#">
-                                    <ul>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="black" name="color" /><label htmlFor="black">Black<span>(29)</span></label></li>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="balckleather" name="color" /><label htmlFor="balckleather">Black
-                                            Leather<span>(29)</span></label></li>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="blackred" name="color" /><label htmlFor="blackred">Black
-                                            with red<span>(19)</span></label></li>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="gold" name="color" /><label htmlFor="gold">Gold<span>(19)</span></label></li>
-                                        <li className="filter-list"><input className="pixel-radio" type="radio" id="spacegrey" name="color" /><label htmlFor="spacegrey">Spacegrey<span>(19)</span></label></li>
-                                    </ul>
-                                </form>
-                            </div>
-                            <div className="common-filter">
-                                <div className="head">Price</div>
-                                <div className="price-range-area">
-                                    <div id="price-range" />
-                                    <div className="value-wrapper d-flex">
-                                        <div className="price">Price:</div>
-                                        <span>$</span>
-                                        <div id="lower-value" />
-                                        <div className="to">to</div>
-                                        <span>$</span>
-                                        <div id="upper-value" />
+                        {
+                            catId ?
+                                <>
+                                    <div className="sidebar-categories">
+
+                                        <div className="head">Browse SubCategories</div>
+                                        <ul id="fruitsVegetable" aria-expanded="false" aria-controls="fruitsVegetable">
+                                            {
+                                                subcate.filter((sc) => sc.category_id === catId).map((subItem) => (
+                                                    <li className={`main-nav-list child ${activesub === subItem.id ? "active-cate" : ""}`}
+                                                        onClick={() => {
+                                                            // console.log("================", subItem.id);
+                                                            setActiveSub(subItem.id)
+                                                            handleSubCatSelect(subItem.id, subItem.category_id);
+                                                            setCurrentPage(1)
+                                                        }}
+                                                    >
+                                                        <a>{subItem.subcategory_name}
+                                                            {activesub === subItem.id ? <span className="number">({Result.length})</span> : <></>}
+                                                        </a>
+                                                    </li>
+                                                ))
+                                            }
+
+                                        </ul>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                </> : <></>
+                        }
                     </div>
                     <div className="col-xl-9 col-lg-8 col-md-7">
                         {/* Start Filter Bar */}
                         <div className="filter-bar d-flex flex-wrap align-items-center">
-                            <div className="sorting">
-                                <select>
-                                    <option value={1}>Default sorting</option>
-                                    <option value={1}>Default sorting</option>
-                                    <option value={1}>Default sorting</option>
-                                </select>
-                            </div>
                             <div className="sorting mr-auto">
-                                <select>
-                                    <option value={1}>Show 12</option>
-                                    <option value={1}>Show 12</option>
-                                    <option value={1}>Show 12</option>
-                                </select>
                             </div>
                             <div className="pagination">
-                                <a href="#" className="prev-arrow"><i className="fa fa-long-arrow-left" aria-hidden="true" /></a>
-                                <a href="#" className="active">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                                <a href="#" className="dot-dot"><i className="fa fa-ellipsis-h" aria-hidden="true" /></a>
-                                <a href="#">6</a>
-                                <a href="#" className="next-arrow"><i className="fa fa-long-arrow-right" aria-hidden="true" /></a>
+                                <a className="prev-arrow" onClick={() => {
+                                    if (currentPage >= 2) {
+                                        setCurrentPage(currentPage - 1);
+                                    } else {
+                                        setCurrentPage(1)
+                                    }
+                                }} ><i className="fa fa-long-arrow-left" aria-hidden="true" /></a>
+                                <a className={currentPage === currentPage ? "active" : ""} onClick={() => {
+                                    setCurrentPage(currentPage)
+                                }}>{currentPage}</a>
+                                {
+                                    currentPage <= totalPage - 1 ?
+                                        <>
+                                            <a className={currentPage === currentPage + 1 ? "active" : ""} onClick={() => {
+                                                setCurrentPage(currentPage + 1)
+                                            }}>{currentPage + 1}</a>
+                                        </> : <></>
+                                }
+                                {
+                                    currentPage <= totalPage - 2 ?
+                                        <>
+                                            <a className={currentPage === currentPage + 2 ? "active" : ""} onClick={() => {
+                                                setCurrentPage(currentPage + 2)
+                                            }}>{currentPage + 2}</a>
+                                        </> : <></>
+                                }
+
+                                {
+                                    totalPage > 3 ?
+                                        <>
+                                            <a className="dot-dot"><i className="fa fa-ellipsis-h" aria-hidden="true" /></a>
+                                            <a >{totalPage}</a>
+                                        </> : <></>
+                                }
+
+                                <a className="next-arrow" onClick={() => {
+                                    if (currentPage <= totalPage - 1) {
+                                        setCurrentPage(currentPage + 1);
+                                    } else {
+                                        setCurrentPage(1)
+                                    }
+                                }}><i className="fa fa-long-arrow-right" aria-hidden="true" /></a>
                             </div>
                         </div>
-                        {/* End Filter Bar */}
-                        {/* Start Best Seller */}
-                        <section className="lattest-product-area pb-40 category-list">
+                        <section className="lattest-product-area category-list">
                             <div className="row">
-                                {/* single product */}
-                                <div className="col-lg-4 col-md-6">
-                                    <div className="single-product">
-                                        <img className="img-fluid" src="img/product/p1.jpg" alt />
-                                        <div className="product-details">
-                                            <h6>addidas New Hammer sole
-                                                for Sports person</h6>
-                                            <div className="price">
-                                                <h6>$150.00</h6>
-                                                <h6 className="l-through">$210.00</h6>
-                                            </div>
-                                            <div className="prd-bottom">
-                                                <a href className="social-info">
-                                                    <span className="ti-bag" />
-                                                    <p className="hover-text">add to bag</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-heart" />
-                                                    <p className="hover-text">Wishlist</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-sync" />
-                                                    <p className="hover-text">compare</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-move" />
-                                                    <p className="hover-text">view more</p>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single product */}
-                                <div className="col-lg-4 col-md-6">
-                                    <div className="single-product">
-                                        <img className="img-fluid" src="img/product/p2.jpg" alt />
-                                        <div className="product-details">
-                                            <h6>addidas New Hammer sole
-                                                for Sports person</h6>
-                                            <div className="price">
-                                                <h6>$150.00</h6>
-                                                <h6 className="l-through">$210.00</h6>
-                                            </div>
-                                            <div className="prd-bottom">
-                                                <a href className="social-info">
-                                                    <span className="ti-bag" />
-                                                    <p className="hover-text">add to bag</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-heart" />
-                                                    <p className="hover-text">Wishlist</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-sync" />
-                                                    <p className="hover-text">compare</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-move" />
-                                                    <p className="hover-text">view more</p>
-                                                </a>
+                                {/* {console.log("current post ", currentPosts.length)} */}
+                                {currentPosts.length !== 0 ? currentPosts.map((item) => {
+                                    return (
+                                        <div className="col-lg-4 col-md-6">
+                                            <div className="single-product">
+
+                                                <NavLink to={`/productdetails/${item.id}`}>
+
+                                                    <img className="img-thumbnail h-56" src={process.env.REACT_APP_IMG_URL + item?.image[0]} alt={item?.name} style={{
+                                                        'width': '270px',
+                                                        'height': '300px',
+                                                        'object-fit':'cover'
+                                                    }}/>
+                                                </NavLink>
+                                                <div className="product-details">
+
+                                                    <NavLink to={`/productdetails/${item.id}`}>
+                                                        <h6>{item.name}</h6>
+                                                    </NavLink>
+                                                    <div className="price">
+                                                        <h6>₹{item.price}</h6>
+                                                        <h6 className="l-through">₹{item.price + 159}</h6>
+                                                    </div>
+                                                    <div className="prd-bottom">
+                                                        <NavLink className="social-info" to={`/productdetails/${item.id}`}>
+                                                            <span className="ti-bag" />
+                                                            <p className="hover-text">add to bag</p>
+                                                        </NavLink>
+                                                        <NavLink className="social-info" to={`/productdetails/${item.id}`} >
+                                                            <span className="lnr lnr-move" />
+                                                            <p className="hover-text">view more</p>
+                                                        </NavLink>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    )
+                                }) : <>No Product Available</>
+                                }
                                 {/* single product */}
-                                <div className="col-lg-4 col-md-6">
-                                    <div className="single-product">
-                                        <img className="img-fluid" src="img/product/p3.jpg" alt />
-                                        <div className="product-details">
-                                            <h6>addidas New Hammer sole
-                                                for Sports person</h6>
-                                            <div className="price">
-                                                <h6>$150.00</h6>
-                                                <h6 className="l-through">$210.00</h6>
-                                            </div>
-                                            <div className="prd-bottom">
-                                                <a href className="social-info">
-                                                    <span className="ti-bag" />
-                                                    <p className="hover-text">add to bag</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-heart" />
-                                                    <p className="hover-text">Wishlist</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-sync" />
-                                                    <p className="hover-text">compare</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-move" />
-                                                    <p className="hover-text">view more</p>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single product */}
-                                <div className="col-lg-4 col-md-6">
-                                    <div className="single-product">
-                                        <img className="img-fluid" src="img/product/p4.jpg" alt />
-                                        <div className="product-details">
-                                            <h6>addidas New Hammer sole
-                                                for Sports person</h6>
-                                            <div className="price">
-                                                <h6>$150.00</h6>
-                                                <h6 className="l-through">$210.00</h6>
-                                            </div>
-                                            <div className="prd-bottom">
-                                                <a href className="social-info">
-                                                    <span className="ti-bag" />
-                                                    <p className="hover-text">add to bag</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-heart" />
-                                                    <p className="hover-text">Wishlist</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-sync" />
-                                                    <p className="hover-text">compare</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-move" />
-                                                    <p className="hover-text">view more</p>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single product */}
-                                <div className="col-lg-4 col-md-6">
-                                    <div className="single-product">
-                                        <img className="img-fluid" src="img/product/p5.jpg" alt />
-                                        <div className="product-details">
-                                            <h6>addidas New Hammer sole
-                                                for Sports person</h6>
-                                            <div className="price">
-                                                <h6>$150.00</h6>
-                                                <h6 className="l-through">$210.00</h6>
-                                            </div>
-                                            <div className="prd-bottom">
-                                                <a href className="social-info">
-                                                    <span className="ti-bag" />
-                                                    <p className="hover-text">add to bag</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-heart" />
-                                                    <p className="hover-text">Wishlist</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-sync" />
-                                                    <p className="hover-text">compare</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-move" />
-                                                    <p className="hover-text">view more</p>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single product */}
-                                <div className="col-lg-4 col-md-6">
-                                    <div className="single-product">
-                                        <img className="img-fluid" src="img/product/p6.jpg" alt />
-                                        <div className="product-details">
-                                            <h6>addidas New Hammer sole
-                                                for Sports person</h6>
-                                            <div className="price">
-                                                <h6>$150.00</h6>
-                                                <h6 className="l-through">$210.00</h6>
-                                            </div>
-                                            <div className="prd-bottom">
-                                                <a href className="social-info">
-                                                    <span className="ti-bag" />
-                                                    <p className="hover-text">add to bag</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-heart" />
-                                                    <p className="hover-text">Wishlist</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-sync" />
-                                                    <p className="hover-text">compare</p>
-                                                </a>
-                                                <a href className="social-info">
-                                                    <span className="lnr lnr-move" />
-                                                    <p className="hover-text">view more</p>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                         </section>
                         {/* End Best Seller */}
                         {/* Start Filter Bar */}
                         <div className="filter-bar d-flex flex-wrap align-items-center">
                             <div className="sorting mr-auto">
-                                <select>
-                                    <option value={1}>Show 12</option>
-                                    <option value={1}>Show 12</option>
-                                    <option value={1}>Show 12</option>
-                                </select>
                             </div>
                             <div className="pagination">
-                                <a href="#" className="prev-arrow"><i className="fa fa-long-arrow-left" aria-hidden="true" /></a>
-                                <a href="#" className="active">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                                <a href="#" className="dot-dot"><i className="fa fa-ellipsis-h" aria-hidden="true" /></a>
-                                <a href="#">6</a>
-                                <a href="#" className="next-arrow"><i className="fa fa-long-arrow-right" aria-hidden="true" /></a>
+                                <a className="prev-arrow" onClick={() => {
+                                    if (currentPage >= 2 && currentPage >= indexOfFirstPost + 1) {
+                                        setCurrentPage(currentPage - 1);
+                                    } else {
+                                        setCurrentPage(1)
+                                    }
+                                }} ><i className="fa fa-long-arrow-left" aria-hidden="true" /></a>
+                                <a className={currentPage === currentPage ? "active" : ""} onClick={() => {
+                                    setCurrentPage(currentPage)
+                                }}>{currentPage}</a>
+                                {
+                                    currentPage <= totalPage - 1 ?
+                                        <>
+                                            <a className={currentPage === currentPage + 1 ? "active" : ""} onClick={() => {
+                                                setCurrentPage(currentPage + 1)
+                                            }}>{currentPage + 1}</a>
+                                        </> : <></>
+                                }
+                                {
+                                    currentPage <= totalPage - 2 ?
+                                        <>
+                                            <a className={currentPage === currentPage + 2 ? "active" : ""} onClick={() => {
+                                                setCurrentPage(currentPage + 2)
+                                            }}>{currentPage + 2}</a>
+                                        </> : <></>
+                                }
+
+                                {
+                                    totalPage > 3 ?
+                                        <>
+                                            <a className="dot-dot"><i className="fa fa-ellipsis-h" aria-hidden="true" /></a>
+                                            <a >{totalPage}</a>
+                                        </> : <></>
+                                }
+
+                                <a className="next-arrow" onClick={() => {
+                                    if (currentPage <= totalPage - 1) {
+                                        setCurrentPage(currentPage + 1);
+                                    } else {
+                                        setCurrentPage(1)
+                                    }
+                                }}><i className="fa fa-long-arrow-right" aria-hidden="true" /></a>
                             </div>
                         </div>
                         {/* End Filter Bar */}
                     </div>
                 </div>
             </div>
+            <Faq faq={"shop"} />
         </div>
     )
 }
 
-export default shop_Category
+export default Shop_Category

@@ -6,10 +6,13 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { Provider } from 'react-redux'
 import store from './store'
+import AuthProvider from './RTK/context/authProvider'
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </Provider>
 )
 

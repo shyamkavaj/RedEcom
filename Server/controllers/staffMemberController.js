@@ -15,7 +15,7 @@ var getstaffMember = async(req,res)=>{
 var getsinglestaffMember = async(req,res)=>{
     // console.log(req.params.id);
     let data = await staffMember.findOne({where:{id:req.params.id}});
-    console.log(data);
+    // console.log(data);
     res.status(200).json(data);
 }
 
@@ -47,7 +47,7 @@ var  updatestaffMember=async(req,res)=>{
         password: hashSync(req.body.password,10)
     }
     let updatemember = await staffMember.update(updateData,{where:{id:req.params.id}});
-    console.log("Updatemember===>",updatemember);
+    // console.log("Updatemember===>",updatemember);
     if(updatemember[0]>0){
         res.status(200).json({success:1,message:'Data updated Successfully'});
     }else{
@@ -58,7 +58,7 @@ var  updatestaffMember=async(req,res)=>{
 //Delete member
 var deletestaffMember = async (req,res)=>{
     let deletedmember=await staffMember.destroy({where:{id:req.params.id}});
-    console.log(deletedmember);
+    // console.log(deletedmember);
     res.status(200).send({message:'Deleted the user'});
 }
 

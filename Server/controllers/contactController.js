@@ -52,7 +52,7 @@ var updateContact = async (req, res) => {
         let data = await contact.findOne({
             where: { id: id }
         });
-        console.log(data)
+        // console.log(data)
         if (data) {
             let updatedData = await contact.update(req.body,{ where: { id: id }});
             res.status(201).json({ Message: "Data Updated Successfully", updatedData });

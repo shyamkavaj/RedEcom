@@ -1,174 +1,286 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import '../assets/Allcss'
 import card from '../img/product/card.jpg'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { jwtDecode } from 'jwt-decode'
+import { addOrder } from '../RTK/Slice/orderSlice'
+import RenderRazorpay from './RenderRazorpay'
+import axios from 'axios'
+import logo from '../img/cart.jpg'
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 
 const CheckOut = () => {
-    return (
-        <div>
-            <section className="banner-area organic-breadcrumb">
-                <div className="container">
-                    <div className="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
-                        <div className="col-first">
-                            <h1>Checkout</h1>
-                            <nav className="d-flex align-items-center">
-                                <a href="index.html">Home<span className="lnr lnr-arrow-right" /></a>
-                                <a href="single-product.html">Checkout</a>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <section className="checkout_area section_gap">
-                <div className="container">
-                    <div className="returning_customer">
-                        <div className="check_title">
-                            <h2>Returning Customer? <a href="#">Click here to login</a></h2>
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    var Total = 0;
+    var TotalItem = 0;
+
+    var data = sessionStorage.getItem('cart')
+
+    const { products } = useSelector(state => state.product)
+
+    var result = products?.filter((p) => {
+        return data.includes(p?.id)
+    })
+    const token = localStorage.getItem("token");
+    const Tokendata = jwtDecode(token);
+    const { status } = useSelector(state => state.order)
+    // const [orderDetails, setOrderDetails] = useState({
+    //     orderId: null,
+    //     currency: null,
+    //     amount: null,
+    // });
+    useEffect(() => {
+        if (status == 1) {
+            sessionStorage.removeItem('cart');
+            sessionStorage.removeItem('TotalQnty');
+            navigate('/conformation')
+        }
+    }, [status])
+
+    const initialValues = {
+        name: Tokendata.firstName,
+        email: Tokendata.email,
+        address: '',
+        city: '',
+        pincode: '',
+        phone: '',
+        products: [],
+        quantity: '',
+        total: ''
+    }
+    const validationErrorStrc = Yup.object().shape({
+        name: Yup.string().required('Name is required'),
+        email: Yup.string().email('Invalid email').required('Email is required'),
+        address: Yup.string().required('Address is required'),
+        city: Yup.string().required('City is required'),
+        pincode: Yup.string().min(6).max(6).required('Pincode is required'),
+        phone: Yup.string().min(10).max(10).required('Phone is required')
+    });
+    function loadScript(src) {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+            };
+            document.body.appendChild(script);
+        });
+    }
+    async function displayRazorpay(newValues) {
+        console.log("new value ", newValues)
+        const res = await loadScript(
+            "https://checkout.razorpay.com/v1/checkout.js"
+        );
+        if (!res) {
+            alert("Razorpay SDK failed to load. Are you online?");
+            return;
+        }
+
+        const result = await axios.post("http://localhost:5001/addorder", newValues);
+
+        if (!result) {
+            alert("Server error. Are you online?");
+            return;
+        }
+        console.log("value of result is ", result.data)
+        const { amount, id, currency } = result.data;
+        console.log("order amount ",amount,"id is ",id,"currency item ",currency)
+        const options = {
+            key:process.env.RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+            amount: amount.toString(),
+            currency: currency,
+            name: "Karma",
+            description: "Test Transaction",
+            image: { logo },
+            order_id: id,
+            handler: async function (response) {
+                console.log('data for success ',response)
+                const data = {
+                    orderCreationId: id,
+                    razorpayPaymentId: response.razorpay_payment_id,
+                    razorpayOrderId: response.razorpay_order_id,
+                    razorpaySignature: response.razorpay_signature,
+                    data:newValues
+                };
+                console.log("data sent for success ",data);
+                const result = await axios.post("http://localhost:5001/success", data);
+
+                alert(result.data.msg);
+                sessionStorage.removeItem('TotalQnty')
+                sessionStorage.removeItem('cart')
+                navigate('/')
+            },
+            prefill: {
+                name: "Redsparks",
+                email: "shyamkava783@gmail.com",
+                contact: "8200699375",
+            },
+            notes: {
+                address: "Vadodara Gujrat",
+            },
+            theme: {
+                color: "#ffba00",
+            },
+        };
+
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+    }
+    const { values, errors, touched, handleBlur, handleChange, handleSubmit, resetForm } = useFormik({
+        initialValues: initialValues,
+        validationSchema: validationErrorStrc,
+        onSubmit: async (values) => {
+            // console.log("values are ", values)
+            const newValues = {
+                ...values,
+                products: data,
+                quantity: sessionStorage.getItem('TotalQnty'),
+                total: Total
+            }
+            displayRazorpay(newValues)
+            resetForm()
+        }
+    })
+
+
+    return (
+        <>
+
+            <div>
+                <section className="banner-area organic-breadcrumb">
+                    <div className="container">
+                        <div className="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                            <div className="col-first">
+                                <h1>Checkout</h1>
+                                <nav className="d-flex align-items-center">
+                                    <a href="index.html">Home<span className="lnr lnr-arrow-right" /></a>
+                                    <a href="single-product.html">Checkout</a>
+                                </nav>
+                            </div>
                         </div>
-                        <p>If you have shopped with us before, please enter your details in the boxes below. If you are a new
-                            customer, please proceed to the Billing &amp; Shipping section.</p>
-                        <form className="row contact_form" action="#" method="post" noValidate="novalidate">
-                            <div className="col-md-6 form-group p_star">
-                                <input type="text" className="form-control" id="name" name="name" />
-                                <span className="placeholder" data-placeholder="Username or Email" />
-                            </div>
-                            <div className="col-md-6 form-group p_star">
-                                <input type="password" className="form-control" id="password" name="password" />
-                                <span className="placeholder" data-placeholder="Password" />
-                            </div>
-                            <div className="col-md-12 form-group">
-                                <button type="submit" value="submit" className="primary-btn">login</button>
-                                <div className="creat_account">
-                                    <input type="checkbox" id="f-option" name="selector" />
-                                    <label htmlFor="f-option">Remember me</label>
-                                </div>
-                                <a className="lost_pass" href="#">Lost your password?</a>
-                            </div>
-                        </form>
                     </div>
-                    {/* <div className="cupon_area">
-                        <div className="check_title">
-                            <h2>Have a coupon? <a href="#">Click here to enter your code</a></h2>
-                        </div>
-                        <input type="text" placeholder="Enter coupon code" />
-                        <a className="tp_btn" href="#">Apply Coupon</a>
-                    </div> */}
-                    <div className="billing_details">
-                        <div className="row">
-                            <div className="col-lg-8">
-                                <h3>Billing Details</h3>
-                                <form className="row contact_form" action="#" method="post" noValidate="novalidate">
+                </section>
+                <section className="checkout_area section_gap">
+                    <div className="container">
+                        <div className="billing_details">
+                            <div className="row">
+                                <form className="row contact_form">
                                     <div className="col-md-6 form-group p_star">
-                                        <input type="text" className="form-control" id="first" name="name" />
-                                        <span className="placeholder" data-placeholder="First name" />
+                                        <input type="text" className="form-control" required id="first" name="name" onChange={handleChange} onBlur={handleBlur} value={values.name} placeholder='First name' />
+                                        {errors.name && touched.name && <p className='text-danger form-error'>{errors.name}</p>}
                                     </div>
+
                                     <div className="col-md-6 form-group p_star">
-                                        <input type="text" className="form-control" id="last" name="name" />
-                                        <span className="placeholder" data-placeholder="Last name" />
+                                        <input type="text" className="form-control" required id="email" name="email" onChange={handleChange} onBlur={handleBlur} disabled value={values.email} placeholder='Email Address' />
                                     </div>
-                                    <div className="col-md-12 form-group">
-                                        <input type="text" className="form-control" id="company" name="company" placeholder="Company name" />
+                                    <div className="col-md-4 form-group p_star">
+                                        <input type="text" className="form-control" id="country" name="country" value={'India'} placeholder='Country' disabled />
                                     </div>
-                                    <div className="col-md-6 form-group p_star">
-                                        <input type="text" className="form-control" id="number" name="number" />
-                                        <span className="placeholder" data-placeholder="Phone number" />
+                                    <div className="col-md-8 form-group p_star">
+                                        <input type="text" className="form-control" required id="add1" name="address" value={values.address} onChange={handleChange} onBlur={handleBlur} placeholder='Address line' />
+                                        {errors.address && touched.address && <p className='text-danger form-error'>{errors.address}</p>}
                                     </div>
-                                    <div className="col-md-6 form-group p_star">
-                                        <input type="text" className="form-control" id="email" name="compemailany" />
-                                        <span className="placeholder" data-placeholder="Email Address" />
+                                    <div className="col-md-4 form-group p_star">
+                                        <input type="text" className="form-control" required id="city" name="city" value={values.city} onChange={handleChange} onBlur={handleBlur} placeholder='Enter City Name' />
+                                        {errors.city && touched.city &&
+                                            <p className='text-danger form-error'>{errors.city}</p>
+                                        }
+
                                     </div>
-                                    <div className="col-md-12 form-group p_star">
-                                        <select className="country_select">
-                                            <option value={1}>Country</option>
-                                            <option value={2}>Country</option>
-                                            <option value={4}>Country</option>
-                                        </select>
+                                    <div className="col-md-4 form-group">
+                                        <input type="number" className="form-control" id="zip" required name="pincode" value={values.pincode} onChange={handleChange} onBlur={handleBlur} placeholder="Pincode" />
+                                        {errors.pincode && touched.pincode && <p className='text-danger form-error'>{errors.pincode}</p>}
                                     </div>
-                                    <div className="col-md-12 form-group p_star">
-                                        <input type="text" className="form-control" id="add1" name="add1" />
-                                        <span className="placeholder" data-placeholder="Address line 01" />
+                                    <div className="col-md-4 form-group">
+                                        <input type="number" className="form-control" id="phone" required name="phone" value={values.phone} onChange={handleChange} onBlur={handleBlur} placeholder="Phone" />
+                                        {errors.phone && touched.phone && <p className='text-danger form-error'>{errors.phone}</p>}
                                     </div>
-                                    <div className="col-md-12 form-group p_star">
-                                        <input type="text" className="form-control" id="add2" name="add2" />
-                                        <span className="placeholder" data-placeholder="Address line 02" />
-                                    </div>
-                                    <div className="col-md-12 form-group p_star">
-                                        <input type="text" className="form-control" id="city" name="city" />
-                                        <span className="placeholder" data-placeholder="Town/City" />
-                                    </div>
-                                    <div className="col-md-12 form-group p_star">
-                                        <select className="country_select">
-                                            <option value={1}>District</option>
-                                            <option value={2}>District</option>
-                                            <option value={4}>District</option>
-                                        </select>
-                                    </div>
-                                    <div className="col-md-12 form-group">
-                                        <input type="text" className="form-control" id="zip" name="zip" placeholder="Postcode/ZIP" />
-                                    </div>
-                                    <div className="col-md-12 form-group">
-                                        <div className="creat_account">
-                                            <input type="checkbox" id="f-option2" name="selector" />
-                                            <label htmlFor="f-option2">Create an account?</label>
+                                    <div className="col-lg-12">
+                                        <div className="order_box">
+                                            <h2>Your Order</h2>
+                                            <div>
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th style={{ 'border-bottom': '1px solid #9f9f9f', 'padding': '5px' }} className='col-1 center'>Index</th>
+                                                            <th style={{ 'border-bottom': '1px solid #9f9f9f', 'padding': '5px' }} className='col-8 center'>Product</th>
+                                                            <th style={{ 'border-bottom': '1px solid #9f9f9f', 'padding': '5px' }} className='col-1 center'>Quantity</th>
+                                                            <th style={{ 'border-bottom': '1px solid #9f9f9f', 'padding': '5px' }} className='col-2 center'>Totals</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {result?.map((product, index) => {
+
+                                                            const productsCart = JSON.parse(sessionStorage.getItem("cart"))
+                                                            const item = productsCart.filter((pro) => pro.product_id === product.id)
+
+                                                            Total = Total + item[0].Qnty * product.price
+                                                            TotalItem = TotalItem + item[0].Qnty
+                                                            return (
+                                                                <tr style={{ 'margin-bottom': '5px' }}>
+                                                                    <td style={{ 'padding': '8px' }} className='col-1 center'>{index + 1}</td>
+                                                                    <td style={{ 'padding': '8px' }} className='col-8 center'>{product.name}</td>
+                                                                    <td style={{ 'padding': '8px' }} className='col-1 center'>{item[0].Qnty}</td>
+                                                                    <td style={{ 'padding': '8px' }} className='col-2 center'>₹<span className='ml-1'>{product.price * item[0].Qnty}</span></td>
+                                                                </tr>
+                                                            )
+                                                        })}
+
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <th style={{ 'border-bottom': '1px solid #9f9f9f', 'border-top': '1px solid #9f9f9f', 'padding': '5px' }} className='col-1 center'></th>
+                                                        <th style={{ 'border-bottom': '1px solid #9f9f9f', 'border-top': '1px solid #9f9f9f', 'padding': '5px' }} className='col-2 center'><b>Total</b></th>
+                                                        <th style={{ 'border-bottom': '1px solid #9f9f9f', 'border-top': '1px solid #9f9f9f', 'padding': '5px' }} className='col-6 center'><b>{TotalItem}</b></th>
+                                                        <th style={{ 'border-bottom': '1px solid #9f9f9f', 'border-top': '1px solid #9f9f9f', 'padding': '5px' }} className='col-4 center'><b>₹<span className='ml-1'>{Total}</span></b></th>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                            <div className="payment_item active">
+                                                <div className="radion_btn">
+                                                    <input type="radio" id="f-option6" name="selector" />
+                                                    <label htmlFor="f-option6">Payment</label>
+                                                    <img src={card} alt />
+                                                    <div className="check" />
+                                                </div>
+                                                <p>Pay via UPI: you can pay with any UPI Id.</p>
+                                            </div>
+                                            <div className="creat_account">
+                                                <input type="checkbox" id="f-option4" name="selector" />
+                                                <label htmlFor="f-option4">I’ve read and accept the </label>
+                                                <a>terms &amp; conditions*</a>
+                                            </div>
+                                            <button type='submit' onClick={handleSubmit} className="primary-btn">Proceed to Payment</button>
+                                            {/* <ToastContainer position='top-right'/> */}
                                         </div>
-                                    </div>
-                                    <div className="col-md-12 form-group">
-                                        <div className="creat_account">
-                                            <h3>Shipping Details</h3>
-                                            <input type="checkbox" id="f-option3" name="selector" />
-                                            <label htmlFor="f-option3">Ship to a different address?</label>
-                                        </div>
-                                        <textarea className="form-control" name="message" id="message" rows={1} placeholder="Order Notes" defaultValue={""} />
                                     </div>
                                 </form>
                             </div>
-                            <div className="col-lg-4">
-                                <div className="order_box">
-                                    <h2>Your Order</h2>
-                                    <ul className="list">
-                                        <li><a href="#">Product <span>Total</span></a></li>
-                                        <li><a href="#">Fresh Blackberry <span className="middle">x 02</span> <span className="last">$720.00</span></a></li>
-                                        <li><a href="#">Fresh Tomatoes <span className="middle">x 02</span> <span className="last">$720.00</span></a></li>
-                                        <li><a href="#">Fresh Brocoli <span className="middle">x 02</span> <span className="last">$720.00</span></a></li>
-                                    </ul>
-                                    <ul className="list list_2">
-                                        <li><a href="#">Subtotal <span>$2160.00</span></a></li>
-                                        <li><a href="#">Shipping <span>Flat rate: $50.00</span></a></li>
-                                        <li><a href="#">Total <span>$2210.00</span></a></li>
-                                    </ul>
-                                    <div className="payment_item">
-                                        <div className="radion_btn">
-                                            <input type="radio" id="f-option5" name="selector" />
-                                            <label htmlFor="f-option5">Check payments</label>
-                                            <div className="check" />
-                                        </div>
-                                        <p>Please send a check to Store Name, Store Street, Store Town, Store State / County,
-                                            Store Postcode.</p>
-                                    </div>
-                                    <div className="payment_item active">
-                                        <div className="radion_btn">
-                                            <input type="radio" id="f-option6" name="selector" />
-                                            <label htmlFor="f-option6">Paypal </label>
-                                            <img src={card} alt />
-                                            <div className="check" />
-                                        </div>
-                                        <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal
-                                            account.</p>
-                                    </div>
-                                    <div className="creat_account">
-                                        <input type="checkbox" id="f-option4" name="selector" />
-                                        <label htmlFor="f-option4">I’ve read and accept the </label>
-                                        <a href="#">terms &amp; conditions*</a>
-                                    </div>
-                                    <a className="primary-btn" href="#">Proceed to Paypal</a>
-                                </div>
-                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-        </div>
+            </div>
+            {/* {console.log("dis ", displayRazorpay)}
+            {displayRazorpay && (
+                <RenderRazorpay
+                    amount={orderDetails.amount}
+                    currency={orderDetails.currency}
+                    orderId={orderDetails.orderId}
+                    keyId={process.env.RAZORPAY_KEY_ID}
+                    keySecret={process.env.RAZORPAY_SECRET}
+                />
+            )} */}
+        </>
     )
 }
 

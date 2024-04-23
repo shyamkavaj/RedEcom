@@ -1,9 +1,11 @@
 import React from 'react'
+import Footer from './Footer'
+import Faq from './Faq'
 
 const Contact = () => {
     return (
         <div>
-            <section className="banner-area organic-breadcrumb">
+            <section className="banner-area organic-breadcrumb mb-3">
                 <div className="container">
                     <div className="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
                         <div className="col-first">
@@ -64,6 +66,8 @@ const Contact = () => {
                     </div>
                 </div>
             </section>
+            <Faq faq={"contact"}/>
+            <Footer/>
         </div>
     )
 }

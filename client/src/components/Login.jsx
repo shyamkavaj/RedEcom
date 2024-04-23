@@ -1,11 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import login_img from '../img/login.jpg';
-import { NavLink } from 'react-router-dom/dist';
+import { NavLink, useNavigate } from 'react-router-dom/dist';
 import { Formik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
-import {loginUser} from "../RTK/Slice/UserSlice";
+// import { loginUser } from '../RTK/Slice/userSlice'
 import * as Yup from 'yup';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { loginUser } from '../RTK/Slice/userSlice';
+// import { loginUser } from '../RTK/Slice/UserSlice';
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
     email: Yup.string()
@@ -26,6 +30,26 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 const Login = () => {
 
     const dispatch = useDispatch();
+    const { status,msg } = useSelector(state => state.user)
+    const token = localStorage.getItem('token')
+    // console.log(status)
+    
+    var notify = () =>toast.error(msg);
+    // useEffect()
+    const navigate = useNavigate()
+    useEffect(() => {
+        // console.log("in notify")
+    },[msg])
+    // if(token){
+        //     navigate('/')
+        // }
+        notify = () => toast.error(msg)
+    useEffect(() => {
+        if (token && msg === "Authenticated!,User Login Successfuly") {
+            navigate('/')
+            window.location.reload();
+        }
+    },[msg])
     return (
         <Formik
             // rede
@@ -37,15 +61,28 @@ const Login = () => {
                     password: '',
                 }}
             validationSchema={DisplayingErrorMessagesSchema}
-            onSubmit={(values, { resetForm, setSubmitting, props }) => {
+            onSubmit={ (values, { resetForm, setSubmitting, props }) => {
 
-                alert(JSON.stringify(values, null, 2));
+                // alert(JSON.stringify(values, null, 2))
+                // setInterval(dispatch(loginUser),1000)
                 dispatch(loginUser(values));
+                
+                // console.log("st ", status)
+                // setInterval(() => {
+                    // if (token && msg === "Authenticated!,User Login Successfuly") {
+                    //     console.log("hiiiiiiiii")
+                    //     navigate('/')
+                    // } else {
+                    //     console.log('dasfdsafdas')
+                    // }
+                // }, 1000)
+
                 resetForm({});
                 setSubmitting(false);
-                console.log(values)
+                // console.log(values)
             }}
         >
+        
             {({ values, handleChange, handleSubmit, handleBlur, errors, touched, setFieldValue }) => (
 
                 <div>
@@ -67,27 +104,31 @@ const Login = () => {
                                         <h3 style={{ "margin-bottom": "30px" }}>Log in to enter</h3>
                                         <form className="row login_form" method="post" id="contactForm" noValidate="novalidate" onSubmit={handleSubmit}>
                                             <div className="col-md-12 form-group">
-                                                <input type="text" className="form-control" id="name" 
-                                                name="email" placeholder="Email"
-                                                onChange={handleChange} onBlur={handleBlur}
-                                                value={values.email}   />
+                                                <input type="text" className="form-control" id="name"
+                                                    name="email" placeholder="Email"
+                                                    onChange={handleChange} onBlur={handleBlur}
+                                                    value={values.email} />
                                                 {errors.email && touched.email && <p>{errors.email}</p>}
                                             </div>
                                             <div className="col-md-12 form-group">
-                                                <input type="password" className="form-control" id="name" 
-                                                name="password" placeholder="Password"
-                                                onChange={handleChange} onBlur={handleBlur}
-                                                value={values.password}  />
+                                                <input type="password" className="form-control" id="name"
+                                                    name="password" placeholder="Password"
+                                                    onChange={handleChange} onBlur={handleBlur}
+                                                    value={values.password} />
                                                 {errors.password && touched.password && <p>{errors.password}</p>}
                                             </div>
                                             <div className="col-md-12 form-group">
                                                 <div className="creat_account">
-                                                    <input type="checkbox" id="f-option2" name="selector" />
-                                                    <label htmlFor="f-option2">Keep me logged in</label>
+                                                    {/* <input type="checkbox" id="f-option2" name="selector" /> */}
+                                                    {/* <label htmlFor="f-option2">Keep me logged in</label> */}
+                                                    {msg === "Password Incorrect" || msg==="User does not exist" ? 
+                                                    
+                                                    <label htmlFor="f-option2" style={{"color":"red","margin-bottom":"0"}} >{msg}</label>
+                                                     : <></>}
                                                 </div>
                                             </div>
                                             <div className="col-md-12 form-group">
-                                                <button type="submit" value="submit" className="primary-btn">Log In</button>
+                                                <button type="submit" value="submit" className="primary-btn" onClick={notify}>Log In</button>
                                                 <a href="#">Forgot Password?</a>
                                             </div>
                                         </form>

@@ -12,14 +12,16 @@ const staffCtrl = require('./controllers/staffMemberController')
 const categoryCtrl = require('./controllers/categoryController')
 const customerOrderCtrl = require('./controllers/orderController')
 const contactCtrl = require('./controllers/contactController')
+const subcategoryCtrl = require('./controllers/subcategoryCtrl')
 const verifyToken = require('./middleware/verifyToken');
 
 // config
 const sequelize = require('./config/config');
-
+require('dotenv').config()
 //data format
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static('uploads'))
 
 const productCtrl = require('./controllers/productCtrl')
 var faqCtrl = require('./controllers/faqCtrl');
@@ -41,7 +43,7 @@ app.get('/getProductByCate/:id',productCtrl.getProductByCategory)
 app.get('/getProductByCategAndSubCate/:id/:categ',productCtrl.getProductByCategAndSubCate)
 app.post('/updateProductImg/:id',upload.array('image'),productCtrl.updateProductImgById)
 app.post('/specificImgDelete/:id/:index',productCtrl.specificImgDelete)
-app.patch('/updateProductDetail/:id',productCtrl.updateProductDetailById)
+app.patch('/updateProductDetail/:id',upload.array('image'),productCtrl.updateProductDetailById)
 app.delete('/deleteProduct/:id',productCtrl.deleteProductById)
 
 //Staff CRUD
@@ -52,8 +54,8 @@ app.delete('/deletestaff/:id',checkToken,staffCtrl.deletestaffMember);
 app.patch('/updatestaff/:id',checkToken,staffCtrl.updatestaffMember);
 
 //Category CRUD
-app.post('/addcategory',upload.single('image'),categoryCtrl.createCategory);
-app.get('/getcategorys',categoryCtrl.getCategory);
+app.post('/addCategory',categoryCtrl.createCategory);
+app.get('/getallcategory',categoryCtrl.getAllCategory);
 app.get('/getsignlecategory/:id',categoryCtrl.getsingleCategory);
 app.delete('/deletecategory/:id',categoryCtrl.deleteCategory);
 app.patch('/updatecategory/:id',categoryCtrl.updateCategory);
@@ -65,6 +67,8 @@ app.post('/addorder',customerOrderCtrl.addCustomerOrder);
 app.delete('/deleteorder/:id',customerOrderCtrl.deleteCustomerOrder);
 app.patch('/updateorder/:id',customerOrderCtrl.updateCustomerOrder);
 
+app.post('/success',customerOrderCtrl.paymentCapture)
+// 2303manavgohel@gmail.com
 //Contact CRUD
 app.get('/getAllcontact',contactCtrl.getAllContact);
 app.get('/getcontact/:id',contactCtrl.getOneContact);
@@ -78,6 +82,16 @@ app.get('/getAllFaq',faqCtrl.getAllFaq);
 app.post('/addFaq',faqCtrl.createFaq);
 app.patch('/updateFaq/:id',faqCtrl.updateFaq);
 app.delete('/deleteFaq/:id',faqCtrl.deleteFaq);
+// console.log("sec_id ",process.env.RAZORPAY_SECRET)
+//SubCategory CRUD
+app.post('/addsubcategory',subcategoryCtrl.AddSubCategory);
+app.get('/getallsubcategory',subcategoryCtrl.getAllSubCategory);
+app.get('/getsinglesubcat',subcategoryCtrl.getSingleSubCat);
+app.delete('/deletesubcategory/:id',subcategoryCtrl.removeSubCat);
+app.patch('/updatesubcat/:id',subcategoryCtrl.updateSubCat);
+
+
+app.get('/getCateId/:id',subcategoryCtrl.getCateId);
 
 app.listen(5001,()=>{
     console.log("Server is running on port 5001");

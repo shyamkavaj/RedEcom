@@ -131,8 +131,8 @@
   overflow: hidden;
   color: #fff;
   padding: 0 30px;
-  line-height: 50px;
-  border-radius: 50px;
+  line-height: 38px;
+  border-radius: 3px;
   display: inline-block;
   text-transform: uppercase;
   font-weight: 500;
@@ -1566,6 +1566,52 @@ h6 {
   color: #fff;
 }
 
+.nav-link-in {
+  line-height: 45px;
+  padding: 0px 30px;
+  transition: all 0.3s ease 0s;
+  display: block;
+  margin-right: 0px;
+  background: #fff;
+  color: #ffba00;
+}
+.nav-out{
+  /* color:#ffba00; */
+  text-transform: uppercase;
+  line-height: 45px;
+  padding: 0px;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #222222;
+}
+.out:hover{
+  background: 'red';
+  color: '#ffba00'
+}
+/* .out:hover{
+
+} */
+.nav-item-in{
+    line-height: 26px;
+    padding: 0px 30px;
+    transition: all 0.3s ease 0s;
+    display: block;
+    margin-right: 0px;
+    color:#ffba00
+}
+.out-hover:hover{
+  color: #fff;
+  background-color: #ffba00;
+}
+/* .nav-item-in {
+  color: #ffba00
+}
+.nav-item-in:hover {
+  background: #ffba00;
+  color: #fff;
+} */
+
 @media (min-width: 992px) {
   .header_area .navbar .nav .nav-item.submenu:hover ul {
     visibility: visible;
@@ -2225,7 +2271,7 @@ h6 {
 }
 
 .single-product {
-  margin-bottom: 50px;
+  /* margin-bottom: 50px; */
 }
 
 .single-product img {
@@ -4837,6 +4883,20 @@ label {
   box-shadow: 0 10px 10px rgba(153, 153, 153, 0.1);
 }
 
+/* ------------------- */
+.show-menu {
+  max-height: 500px;
+  /* Adjust height as needed */
+  transition: max-height 0.5s ease;
+  /* Adjust transition duration and easing as needed */
+}
+
+/* .navbar-collapse.offset {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+} */
+/* ------------------ */
 .sidebar-categories .main-nav-list a {
   font-size: 14px;
   display: block;
@@ -4847,6 +4907,10 @@ label {
 
 .sidebar-categories .main-nav-list a:hover {
   color: #ffba00;
+}
+
+.active-cate {
+  color: #ffba00
 }
 
 .sidebar-categories .main-nav-list a .number {
@@ -5760,6 +5824,7 @@ label {
   padding-left: 10px;
 }
 
+
 .product_count button {
   display: block;
   border: none;
@@ -5767,7 +5832,7 @@ label {
   box-shadow: none;
   cursor: pointer;
   position: absolute;
-  right: 0px;
+  right: 10px;
   font-size: 14px;
   color: #cccccc;
   -webkit-transition: all 0.3s ease 0s;
@@ -6086,38 +6151,25 @@ label {
 
 .cart_inner .table tbody tr td .product_count input {
   width: 100px;
-  padding-left: 30px;
+  padding-left: 0;
   height: 40px;
   outline: none;
+  text-align: center;
   box-shadow: none;
 }
 
 .cart_inner .table tbody tr td .product_count .increase {
-  top: -2px;
+  top: 14px;
+  left: 12px;
+  width: auto;
+  padding: 0;
+  display: inline-flex;
 }
 
-.cart_inner .table tbody tr td .product_count .increase:before {
-  content: "";
-  height: 40px;
-  width: 1px;
-  position: absolute;
-  left: -3px;
-  top: 0px;
-  background: #eeeeee;
-}
 
-.cart_inner .table tbody tr td .product_count .increase:after {
-  content: "";
-  height: 1px;
-  width: 30px;
-  position: absolute;
-  left: -3px;
-  top: 22px;
-  background: #eeeeee;
-}
 
 .cart_inner .table tbody tr td .product_count .reduced {
-  bottom: -6px;
+  bottom: 6px;
 }
 
 .cart_inner .table tbody tr.bottom_button .gray_btn {

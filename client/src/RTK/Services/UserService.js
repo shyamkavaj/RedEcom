@@ -3,13 +3,8 @@ import axios from "axios";
 
 const addUser = async(data) =>{
     try{
-        const res = await axios.post("http://localhost:5001/signup",{
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem('token')
-            },
-            data
-        },{data});
-        console.log("res is ",res.data)
+        const res = await axios.post("http://localhost:5001/signup",{data});
+        // console.log("res is ",res.data)
         return res.data
         // res.status(200).json(res.data);
     }catch(err){
@@ -19,7 +14,7 @@ const addUser = async(data) =>{
 const loginUser = async(data) =>{
     try{
         const res = await axios.post("http://localhost:5001/login",{data});
-        console.log("login user service ",res.data)
+        // console.log("login user service ",res.data)
         localStorage.setItem("token",res.data.token)
         return res.data
     }catch(err){

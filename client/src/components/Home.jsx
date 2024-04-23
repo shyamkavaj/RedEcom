@@ -7,6 +7,7 @@ import RelatedProduct from './RelatedProduct'
 import Footer from './Footer'
 import Feature from './Feature'
 import Banner from './Banner';
+import Faq from './Faq'
 const Home = () => {
   return (
     <div>
@@ -17,6 +18,7 @@ const Home = () => {
         <ExclusiveDeal />
         <Brand />
         <RelatedProduct />
+        <Faq faq={"home"}/>
         <Footer/>
     </div>
   )

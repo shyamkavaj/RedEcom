@@ -1,7 +1,9 @@
 const { verify } = require("jsonwebtoken");
 
 const checkToken = (req, res, next) => {
-    const token = req.get("authorization");
+    const token = req.get("Authorization");
+    // const token = localStorage.getItem("tokenAuth")
+    // console.log("token is ",token)
     if (token) {
         
         // remove the bearer from the token
@@ -11,9 +13,9 @@ const checkToken = (req, res, next) => {
         verify(slicedToken, "Random String", (error, decoded) => {
             if (error) {
                 console.log(error);   
-                res.json({
+                return res.json({
                     success: 0,
-                    msg: "Invalid Token"
+                    msg: "Access denied! Unauthorized user please login again"
                 });          
             } else {
                 // If verification is successful, you can attach the decoded payload to the request
@@ -22,9 +24,9 @@ const checkToken = (req, res, next) => {
             }
         });
     } else {
-        res.json({
+        return res.status(500).json({
             success: 0,
-            msg: "Access denied! Unauthorized user"
+            msg: "Something unexpected"
         });
     }
 };

@@ -1,4 +1,7 @@
 // If you want to override variables do it here
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @import "variables";
 
 $enable-ltr: true;
@@ -8,10 +11,20 @@ $enable-rtl: true;
 @import "@coreui/coreui/scss/coreui";
 
 // Import Chart.js custom tooltips styles
-@import "@coreui/chartjs/scss/coreui-chartjs";
+// @import "@coreui/chartjs/scss/coreui-chartjs";
 
 @import "layout";
 @import "example";
 
 // If you want to add custom CSS you can put it here.
 @import "custom";
+
+#breadc{
+    color: #ffba00;
+    /* color: rgba(var(--cui-link-color-rgb), var(--cui-link-opacity, 1)); */
+    // text-decoration: underline;
+}
+.breadcrumb-item a {
+    text-decoration: none;
+    color: #ffba00;
+}

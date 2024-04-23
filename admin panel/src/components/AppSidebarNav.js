@@ -31,6 +31,7 @@ export const AppSidebarNav = ({ items }) => {
           })}
         key={index}
         {...rest}
+        
       >
         {navLink(name, icon, badge)}
       </Component>
@@ -46,6 +47,7 @@ export const AppSidebarNav = ({ items }) => {
         toggler={navLink(name, icon)}
         visible={location.pathname.startsWith(to)}
         {...rest}
+        
       >
         {item.items?.map((item, index) =>
           item.items ? navGroup(item, index) : navItem(item, index),

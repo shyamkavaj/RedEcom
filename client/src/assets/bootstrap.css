@@ -182,10 +182,17 @@ a {
     -webkit-text-decoration-skip: objects
 }
 
-a:hover {
-    color: #0056b3;
+/* a:hover {
+    color: #fff;
     text-decoration: underline
+} */
+.in:hover{
+    background-color: #ffba00;
+    color:#fff
 }
+/* .out:hover{
+    background-color: #ffba00;
+} */
 
 a:not([href]):not([tabindex]) {
     color: inherit;

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import signup_img from '../img/login.jpg';
-import { NavLink } from 'react-router-dom/dist';
+import { NavLink, useNavigate } from 'react-router-dom/dist';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import {addUser} from '../RTK/Slice/UserSlice'
+import {addUser} from '../RTK/Slice/userSlice'
 const DisplayingErrorMessagesSchema = Yup.object().shape({
     firstName: Yup.string()
         .min(2, 'Too short')
@@ -39,7 +39,17 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 
 const Signup = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const {message,status} = useSelector(state => state.user)
+    useEffect(() => {
+        console.log("status is out ",status)
 
+        if(status==1){
+            console.log("status is ",status)
+            navigate('/login')
+            window.location.reload();
+        }
+    },[status])
     return (
         <Formik
             // rede
@@ -59,6 +69,9 @@ const Signup = () => {
                 // alert(JSON.stringify(values, null, 2));
                 // console.log(values)
                 dispatch(addUser(values));
+                // window.relo
+                // alert('user created successfull')
+                // navigate('/login')
                 resetForm({});
                 setSubmitting(false);
             }}
@@ -85,7 +98,7 @@ const Signup = () => {
                                                     placeholder="FirstName"
                                                     value={values.firstName}
                                                 />
-                                                {errors.firstname && touched.firstname && <p style={{"color":"red","margin-bottom":"0"}}>{errors.firstname}</p>}
+                                                {errors.firstName && touched.firstName && <p style={{"color":"red","margin-bottom":"0"}}>{errors.firstName}</p>}
                                             </div>
                                             <div className="col-md-12 form-group">
                                                 <input type="text" className="form-control" id="lname" placeholder="LastName"
@@ -129,8 +142,11 @@ const Signup = () => {
                                             </div>
                                             <div className="col-md-12 form-group">
                                                 <div className="creat_account">
-                                                    <input type="checkbox" id="f-option2" name="selector" />
-                                                    <label htmlFor="f-option2">terms & condition apply</label>
+                                                    {/* <input type="checkbox" id="f-option2" name="selector" /> */}
+                                                    
+                                                    {
+                                                        message=="user already exist" ? <label htmlFor="f-option2" style={{'color':'red'}}>{message}</label>:<></>
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="col-md-12 form-group">
