@@ -71,6 +71,7 @@ export const getAllProductByCateAndSub = createAsyncThunk(
     "category/getAllProductByCateAndSub",
     async (data) => {
         try {
+            console.log("sub cate is is sis ",data.cid,data.sid)
             const res = await productService.getAllProductByCateAndSub(data);
             console.log("res in pro sub cate ", res)
             console.log("pro by cate ", res)

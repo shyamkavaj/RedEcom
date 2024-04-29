@@ -110,7 +110,9 @@ const Single_Product = () => {
                                     dots={true}
                                 >
                                     {singleProduct.product.image?.map((item) => (
-                                        <img className='img-fluid' src={process.env.REACT_APP_IMG_URL + item} alt='single image'/>
+                                        <img className='img-fluid' src={process.env.REACT_APP_IMG_URL + item} alt='single image' 
+                                        loading='lazy'
+                                        />
                                     ))}
                                 </OwlCarousel>
                             </div>

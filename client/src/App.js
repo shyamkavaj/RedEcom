@@ -21,7 +21,7 @@ import Conformation from './components/Conformation';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Contact from './components/Contact';
-import { Route,Routes, useNavigate} from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import Home from './components/Home';
 import PrivateRoute from './components/PrivateRoute';
 import { getAllCate } from './RTK/Slice/cateSlice';
@@ -32,6 +32,7 @@ import { useEffect } from 'react';
 import { getAllFaq } from './RTK/Slice/faqSlice';
 import OrderHistory from './components/OrderHistory';
 import { getAllOrder } from './RTK/Slice/orderSlice';
+import ResetPassword from './components/ResetPassword';
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -40,21 +41,22 @@ function App() {
     dispatch(getAllProduct());
     dispatch(getAllFaq());
     dispatch(getAllOrder());
-}, [dispatch])
-// Set the key for the item in local storage
+  }, [dispatch])
+  // Set the key for the item in local storage
   // const localStorageKey = token;
+  console.log("login client id ", process.env.REACT_APP_GOOGLE_CLIENT_ID)
 
   // Set the time in milliseconds after which you want to clear the local storage
   const clearAfterMilliseconds = 86400000; // 1 minute (adjust as needed)
   const navigate = useNavigate();
   // Function to clear the item from local storage after a specific time
   function clearLocalStorageAfterTime() {
-     setTimeout(function () {
-     if(localStorage.getItem('token')){
-        
-      localStorage.removeItem('token');
-      console.log('Local storage item cleared after time.');
-      window.location.reload()
+    setTimeout(function () {
+      if (localStorage.getItem('token')) {
+
+        localStorage.removeItem('token');
+        console.log('Local storage item cleared after time.');
+        window.location.reload()
       }
     }, clearAfterMilliseconds);
 
@@ -70,17 +72,18 @@ function App() {
     <div className="App">
       <Routes>
         <Route exact element={<Navbar />} >
-          <Route path="/"   element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/contact" element={<Contact/>}/>
-          <Route path="/procategory" element={<Shop_Category />}/>
-          <Route path="/cart" element={<Card/>}/>
-          <Route path="/productdetails/:id" element={<Single_Product/>}/>
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/procategory" element={<Shop_Category />} />
+          <Route path="/cart" element={<Card />} />
+          <Route path="/productdetails/:id" element={<Single_Product />} />
+          <Route path="/resetpassword/:email" element={<ResetPassword/>}/>
           <Route element={<PrivateRoute />}>
             <Route path='/checkout' element={<CheckOut />} />
             <Route path='/conformation' element={<Conformation />} />
-            <Route path='/allorder' element={<OrderHistory/>}/>
+            <Route path='/allorder' element={<OrderHistory />} />
           </Route>
         </Route>
       </Routes>

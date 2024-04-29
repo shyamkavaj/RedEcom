@@ -20,6 +20,7 @@ export const loginUser = createAsyncThunk(
     "user/loginUser",
     async(data) => {
         try{
+            console.log("userinfo login slice ",data)
             const res = await userService.loginUser(data);
             // console.log("res is ", res.token)
             localStorage.setItem("token", res.token);

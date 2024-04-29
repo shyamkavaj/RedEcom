@@ -24,18 +24,17 @@ const CheckOut = () => {
     var data = sessionStorage.getItem('cart')
 
     const { products } = useSelector(state => state.product)
-
+    // const token = localStorage.getItem("token") ;
+    // console.log("token is ",token)
+    
     var result = products?.filter((p) => {
         return data.includes(p?.id)
     })
-    const token = localStorage.getItem("token");
-    const Tokendata = jwtDecode(token);
+    const [Tokendata,setTokendata] = useState();
+    const [logindata,setLogindata] = useState();
+    const [token,setToken] = useState(localStorage.getItem('token'))
+    
     const { status } = useSelector(state => state.order)
-    // const [orderDetails, setOrderDetails] = useState({
-    //     orderId: null,
-    //     currency: null,
-    //     amount: null,
-    // });
     useEffect(() => {
         if (status == 1) {
             sessionStorage.removeItem('cart');
@@ -43,10 +42,12 @@ const CheckOut = () => {
             navigate('/conformation')
         }
     }, [status])
-
+    console.log("token data ",Tokendata)
     const initialValues = {
-        name: Tokendata.firstName,
+        name:  Tokendata.name,
         email: Tokendata.email,
+        // name:JSON.parse(localStorage.getItem('loginData'))).name : jwtDecode(token).firstName,
+        // email:!token ? (JSON.parse(localStorage.getItem('loginData'))).email : jwtDecode(token).email, 
         address: '',
         city: '',
         pincode: '',

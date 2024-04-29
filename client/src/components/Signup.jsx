@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import {addUser} from '../RTK/Slice/userSlice'
 const DisplayingErrorMessagesSchema = Yup.object().shape({
-    firstName: Yup.string()
+    name: Yup.string()
         .min(2, 'Too short')
         .required('enter firstname'),
     lastName: Yup.string()
@@ -57,7 +57,7 @@ const Signup = () => {
             initialValues={
                 // st.enable ? st.singleEmail :
                 {
-                    firstName: '',
+                    name: '',
                     lastName: '',
                     email: '',
                     phone: '', // Default gender value
@@ -92,13 +92,13 @@ const Signup = () => {
 
                                             <div className="col-md-12 form-group">
                                                 <input type="text" className="form-control" id="fname"
-                                                    name="firstName"
+                                                    name="name"
                                                     onChange={handleChange}
                                                     onBlur={handleBlur}
                                                     placeholder="FirstName"
-                                                    value={values.firstName}
+                                                    value={values.name}
                                                 />
-                                                {errors.firstName && touched.firstName && <p style={{"color":"red","margin-bottom":"0"}}>{errors.firstName}</p>}
+                                                {errors.name && touched.name && <p style={{"color":"red","margin-bottom":"0"}}>{errors.name}</p>}
                                             </div>
                                             <div className="col-md-12 form-group">
                                                 <input type="text" className="form-control" id="lname" placeholder="LastName"

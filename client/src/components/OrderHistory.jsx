@@ -6,15 +6,106 @@ import { Eye } from 'lucide-react';
 import { getAllOrder } from '../RTK/Slice/orderSlice';
 import Modal from 'react-bootstrap/Modal';
 import { Button, Image } from 'react-bootstrap';
+import ExcelJS from 'exceljs'
 
 const OrderHistory = () => {
     const [modalShow, setModalShow] = React.useState(false);
     const dispatch = useDispatch()
-    const token = localStorage.getItem("token");
-    const Tokendata = jwtDecode(token);
+    const token = localStorage.getItem("token") ? localStorage.getItem('token') : localStorage.getItem('loginData')
+    const Tokendata = localStorage.getItem("token") ? jwtDecode(token) : JSON.parse(token);
+    console.log('token data is ',Tokendata)
     const { orders } = useSelector(state => state.order);
     const { products } = useSelector(state => state.product)
     const result = orders?.filter((order) => order.email == Tokendata.email)
+
+    const exportExcelFile = () => {
+
+        const workbook = new ExcelJS.Workbook();
+
+        const sheet = workbook.addWorksheet("Order History");
+        // sheet.startCell = {row:2,column:4}
+
+        sheet.getRow(1).border = {
+            bottom:{ style:'thick',color:{argb:'ffff0000'}}
+        }
+
+        sheet.getRow(1).font = {
+            name:"Comic Sans MS",
+            family:4,
+            size:16,
+            bold:true
+        }
+
+        // sheet.properties.defaultRowHeight = 80;
+
+        sheet.columns = [
+            {
+                header:"Index",
+                key:"index",
+                width:10
+            },
+            {
+                header:"Name",
+                key:"name",
+                width:10
+            },
+            {
+                header:"Address",
+                key:"address",
+                width:20
+            },
+            {
+                header:"Total",
+                key:"total",
+                width:10
+            },
+            {
+                header:"Items",
+                key:"quantity",
+                width:10
+            },
+            {
+                header:"Status",
+                key:"status",
+                width:10
+            }
+        ]
+        result?.map((order,index) => {
+            sheet.addRow({
+                index:index+1,
+                name:order.name,
+                address:order.address,
+                total:order.total,
+                quantity:order.quantity,
+                status:order.status
+            })
+        }) 
+        // const totalCol = sheet.getColumn(4);
+        // totalCol.eachCell(cell => {
+        //     const cellValue = sheet.getCell(cell.address).value
+
+        //     if(cellValue > 500 && cellValue < 600000){
+        //         sheet.getCell(cell?.total).fill = {
+        //             type:'pattern',
+        //             pattern:'darkVertical',
+        //             fgColor:{argb:'FF00'}
+        //         }
+        //     }
+        // })
+
+        workbook.xlsx.writeBuffer().then(data => {
+            const blob = new Blob([data],{
+                type:"application/vnd.openxmlformats-officedocument.spreadsheet.sheet",
+            })
+            const url = window.URL.createObjectURL(blob)
+            const anchor = document.createElement('a');
+            anchor.href = url 
+            anchor.download = 'orderhistory.xlsx'
+            anchor.click();
+            window.URL.revokeObjectURL(url)
+        })
+    }
+
     const [id, setId] = useState();
     const handleClick = (id) => {
         // console.log("id is ", id)
@@ -190,7 +281,7 @@ const OrderHistory = () => {
                                 </table>
                                 <div className="checkout_btn_inner d-flex align-items-center">
                                     <NavLink to='/procategory' className="gray_btn">Continue Shopping</NavLink>
-                                    {/* <NavLink to='/checkout' className="primary-btn">Proceed to checkout</NavLink> */}
+                                    <NavLink onClick={exportExcelFile} className="primary-btn">Export to Sheet</NavLink>
                                 </div>
                             </div>
                         </div>

@@ -6,7 +6,7 @@ const PrivateRoute = () => {
     // console.log("user data is ",data)
     return (
         <div>
-            {token ? <Outlet/> : <Navigate to="/login"/>}
+            {token || localStorage.getItem('loginData')? <Outlet/> : <Navigate to="/login"/>}
         </div>
     )
 }

@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import logo from '../img/logo.png'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom/dist'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllProductByCateAndSub } from '../RTK/Slice/productSlice'
 // import { useSelector } from 'react-redux'
 
 const Navbar = () => {
@@ -13,9 +15,11 @@ const Navbar = () => {
     const [ischeckQnty, setischeckQnty] = useState(0)
     const [TotalQnty, setTotalQnty] = useState(0)
     const navigate = useNavigate();
+    const [filteredSubcate, setFilteredSubcate] = useState([])
     // const [is]
     // const { status } = useSelector(state => state.user)
     const [token, setToken] = useState(localStorage.getItem('token'));
+    const [loginData, setLoginData] = useState(localStorage.getItem('loginData'));
     useEffect(() => {
         setToken(localStorage.getItem('token'))
     }, [token])
@@ -23,7 +27,8 @@ const Navbar = () => {
     useEffect(() => {
         setFix(document.querySelector('#pos_fix'))
     }, [])
-
+    const { categories } = useSelector(state => state.category)
+    const { subcate } = useSelector(state => state.subcate)
     useEffect(() => {
         const pos = fix?.offsetTop
         const myFun = () => {
@@ -58,18 +63,38 @@ const Navbar = () => {
         localStorage.removeItem("token");
         sessionStorage.clear('cart');
         sessionStorage.clear('Qnty');
+        localStorage.removeItem('loginData');
         setToken(null);
+        setLoginData(null)
         navigate('/')
     }
     const [show1, setShow1] = useState(false)
     const [show2, setShow2] = useState(false)
-    const handleClick = () => {
-        setShow1(true)
-        setShow2(false)
+    const handleClick = (name) => {
+        console.log("cate name ", name)
+        const s = subcate?.filter((i) => i.category.name == name)
+
+        setFilteredSubcate(s)
+        console.log("cate sub-cate ", filteredSubcate)
+        setShow1(!show1)
+        // setShow2(false)
+        console.log("mouse is han", show1, show2)
     }
     const handleClick2 = () => {
-        setShow2(true);
+        setShow2(!show2);
         setShow1(false)
+        console.log("mouse is", show2, show1)
+    }
+    var s;
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const dispatch = useDispatch()
+    const handleClickNew = (categoryName) => {
+        setSelectedCategory(categoryName);
+    };
+    const handleSubSelect = (cid,sid) => {
+        console.log('cate_id ',cid,'sub_id',sid)
+        
+        dispatch(getAllProductByCateAndSub({id:sid,categ:cid}))
     }
     return (
         <div>
@@ -98,23 +123,26 @@ const Navbar = () => {
                                                     setShow2(false)
                                                 }}>Check</a>
                                                 <ul className="dropdown-menu" >
-                                                    <li className={`nav-item-in in submenu dropdown out-hover  ${location.pathname === "/procategory" || location.pathname === "/checkout" ? "active" : ""}`} onMouseOver={handleClick} >
-                                                        <a href="#" className="nav-out  dropdown-toggle ">Shopabc123456</a>
-                                                        {
-                                                            show1 ? (
-                                                                <ul className="dropdown-menu" style={{ 'marginLeft': '200px', 'top': '0' }} >
-                                                                    <li className="nav-item"  >
-                                                                        <NavLink className="nav-link-in in" to="/procategory">shop  upper</NavLink>
-                                                                    </li>
-                                                                    <li className="nav-item" >
-                                                                        <NavLink className="nav-link-in in" to="/procategory">product upper</NavLink>
-                                                                    </li>
-                                                                    {/* <li className="nav-item" ><a className="nav-link" style={{background:'#fff',color:'#ffba00'}} href="single-product.html">Product Details abc</a></li> */}
-                                                                </ul>
-                                                            ) : (<></>)
-                                                        }
-                                                    </li>
-                                                    <li className={`nav-item-in submenu dropdown out-hover ${location.pathname === "/procategory" || location.pathname === "/checkout" ? "active" : ""}`} onMouseOver={handleClick2} >
+                                                        { categories?.map((category) => {
+                                                            const filteredSubcategories = subcate?.filter((subcat) => subcat.category.name === category.name);
+                                                            const isCategorySelected = selectedCategory === category.name;
+
+                                                            return (
+                                                                <li className={`nav-item-in in submenu dropdown out-hover ${location.pathname === "/procategory" || location.pathname === "/checkout" ? "active" : ""}`} onMouseOver={() => handleClickNew(category.name)} key={category.id}>
+                                                                    <NavLink href="#" className="nav-out dropdown-toggle">{category.name}</NavLink>
+
+                                                                    <ul className="dropdown-menu" style={{ 'marginLeft': '200px', 'top': '0' }}>
+                                                                        {isCategorySelected && filteredSubcategories.map((subcat) => (
+                                                                            <li className="nav-item" key={subcat.id}>
+                                                                                <NavLink className="nav-link-in in" to="/procategory" onClick={()=>handleSubSelect(category.id,subcat.id)}>{subcat.subcategory_name}</NavLink>
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </li>
+                                                            );
+                                                        })}
+
+                                                    <li className={`nav-item-in submenu dropdown out-hover ${location.pathname === "/procategory" || location.pathname === "/checkout" ? "active" : ""}`} onClick={handleClick2} >
                                                         <NavLink href="#" className="nav-out dropdown-toggle"   >Shopabc</NavLink>
                                                         {
                                                             show2 ? (
@@ -158,7 +186,7 @@ const Navbar = () => {
                                             {/* {console.log("curr ", token)} */}
 
                                             {
-                                                !token ?
+                                                (!token || token === "undefined") ?
                                                     <li className={`nav-item submenu dropdown ${location.pathname === "/login" || location.pathname === "/signup" ? "active" : ""}`}>
                                                         <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Login / SignUp</a>
                                                         <ul className="dropdown-menu">
@@ -168,7 +196,8 @@ const Navbar = () => {
                                                             <li className="nav-item"><NavLink className="nav-link" to={"/signup"}>Sign Up</NavLink></li>
                                                         </ul>
                                                     </li>
-                                                    : <>
+                                                    :
+                                                    <>
                                                         <li className={`nav-item submenu dropdown ${location.pathname === "/allorder" ? "active" : ""}`} >
                                                             <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account</a>
                                                             <ul className="dropdown-menu">
@@ -199,10 +228,10 @@ const Navbar = () => {
 
                             </div>
                         </nav>
-                    </div>
+                    </div >
                     {
                         show ? (
-                            <div className="search_input" id="search_input_box">
+                            <div className="search_input" id="search_input_box" >
                                 <div className="container">
                                     <form className="d-flex justify-content-between">
                                         <input type="text" className="form-control" id="search_input" placeholder="Search Here" />
@@ -214,10 +243,10 @@ const Navbar = () => {
                         ) : (<></>)
                     }
 
-                </header>
-            </div>
+                </header >
+            </div >
             <Outlet />
-        </div>
+        </div >
     )
 }
 
