@@ -21,9 +21,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         status:{
             type:DataTypes.BOOLEAN
+            
         },
         loginVia:{
-            type:DataTypes.BOOLEAN
+            type:DataTypes.BOOLEAN,
+            
+        },
+        role:{
+            type:DataTypes.ENUM("admin","vendor","customer"),
+            defaultValue:"customer"
         }
     },{
         // tableName:'Users'

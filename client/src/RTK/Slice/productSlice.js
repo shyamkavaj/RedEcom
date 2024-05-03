@@ -97,6 +97,7 @@ const productSlice = createSlice({
     name: "product",
     initialState: {
         products: [],
+        image :[],
         product:{},
         loading: "",
         error: ""
@@ -215,6 +216,7 @@ const productSlice = createSlice({
             .addCase(getProductById.fulfilled, (state, action) => {
                 state.loading = false
                 state.product = action.payload
+                state.image = action.payload.image
             })
             .addCase(getProductById.rejected, (state) => {
                 state.loading = false

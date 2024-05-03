@@ -7,8 +7,8 @@ const PrivateRoutes = ({children}) => {
 
     const token = localStorage.getItem('tokenAuth')
     const role = localStorage.getItem('role')
-
-    return token && role === 'admin' ? children : <Navigate to="/login" />
+    console.log("role is is ",role)
+    return token && (role == 'admin' || role == 'vendor') ? children : <Navigate to="/login"/>
 }
 
 export default PrivateRoutes

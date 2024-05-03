@@ -30,9 +30,9 @@ const CheckOut = () => {
     var result = products?.filter((p) => {
         return data.includes(p?.id)
     })
-    const [Tokendata,setTokendata] = useState();
     const [logindata,setLogindata] = useState();
     const [token,setToken] = useState(localStorage.getItem('token'))
+    const [Tokendata,setTokendata] = useState(jwtDecode(token));
     
     const { status } = useSelector(state => state.order)
     useEffect(() => {

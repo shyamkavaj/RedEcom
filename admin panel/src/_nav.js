@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import CIcon from '@coreui/icons-react'
 import {
   cibCodesandbox,
@@ -8,8 +8,12 @@ import {
   cilTags,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
-
-const _nav = [
+const role = localStorage.getItem('role')
+// useEffect(() => {
+//   console.log("in --------------------------------------------------------------------- ")
+//   window.location.reload();
+// },[_nav])
+var _nav = [
   {
     component: CNavItem,
     name: 'Dashboard',
@@ -33,6 +37,12 @@ const _nav = [
         to: '/products/manageproducts',
       },
     ],
+  },
+  {
+    component: CNavItem,
+    name: 'Manage User',
+    to: '/users',
+    icon: <CIcon icon={cilList} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
@@ -67,5 +77,8 @@ const _nav = [
   },
 
 ]
-
+// if (role !== 'admin') {
+//   _nav = _nav.filter(item => item.name !== 'Dashboard');
+//   // _nav = _nav.filter(item => item.name !== 'Dashboard');
+// }
 export default _nav

@@ -1,21 +1,17 @@
 import React, { useMemo } from 'react'
-import { COLUMNS } from './columns'
-import { useTable, useGlobalFilter, usePagination } from 'react-table'
-import { CButton, CCard, CCardBody, CCardHeader, CCol, CFormInput, CFormLabel, CFormSelect, CRow, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
+// import { COLUMNS } from '../user/columns'
 import { useSelector } from 'react-redux'
+import { useGlobalFilter, usePagination, useTable } from 'react-table'
+import { CButton, CCard, CCardBody, CCardHeader, CCol, CFormInput, CFormLabel, CFormSelect, CRow, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { DocsExample } from 'src/components'
-import { jwtDecode } from 'jwt-decode';
+import { ToastContainer } from 'react-toastify'
+import COLUMNS from './columns'
 
-
-const ManageProducts = () => {
-    const user = jwtDecode(localStorage.getItem('tokenAuth')).email
-    console.log("use in product ",user)
-    // const user = 
-    const products = useSelector((state) => state.product.products)
-    const role = localStorage.getItem('role')
-    // const p = role == 'admin' ? products : products.filter((item) => item.uploadby == user)
+const ManageUsers = () => {
+    const { users } = useSelector((state) => state.users)
+    console.log("user is is is ", users)
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => products, [products])    
+    const data = useMemo(() => users, [users])
     const { getTableProps, getTableBodyProps, headerGroups, page, state, setGlobalFilter, prepareRow, nextPage, previousPage, canNextPage, canPreviousPage, pageOptions, setPageSize } = useTable({
         columns,
         data,
@@ -29,19 +25,21 @@ const ManageProducts = () => {
                 <CCol xs={12}>
                     <CCard className="mb-4">
                         <CCardHeader>
-                            <strong>Manage </strong> <small>Product</small>
+                            <strong>Manage </strong> <small>User</small>
                         </CCardHeader>
                         <CCardBody>
                             <DocsExample href="forms/validation#browser-defaults">
-                                <CFormLabel htmlFor="validationDefault01">Search Product</CFormLabel>
-                                <CFormInput
-                                    type="text"
-                                    id="validationDefault01"
-                                    required
-                                    name="name"
-                                    value={globalFilter || ''}
-                                    onChange={e => setGlobalFilter(e.target.value)}
-                                />
+                                <div style={{padding:'20px'}}>
+                                    <CFormLabel htmlFor="validationDefault01">Search User</CFormLabel>
+                                    <CFormInput
+                                        type="text"
+                                        id="validationDefault01"
+                                        required
+                                        name="name"
+                                        value={globalFilter || ''}
+                                        onChange={e => setGlobalFilter(e.target.value)}
+                                    />
+                                </div>
                                 <CTable className='table table-hover mt-3' responsive {...getTableProps()}>
                                     <CTableHead >
                                         {
@@ -72,18 +70,6 @@ const ManageProducts = () => {
                                             })
                                         }
                                     </CTableBody>
-                                    {/* <div> */}
-
-                                    {/* </div> */}
-
-                                    {/* <CFormSelect value={pageSize} size="lg" className="mb-3" aria-label="Large select example" onChange={e => {
-                                        setPageSize(Number(e.target.value))
-                                    }}>
-                                        {[5,10,15].map(pageSize => (
-                                            <option key={pageSize} value={pageSize}>show{pageSize}</option>
-                                        ))}
-                                    </CFormSelect> */}
-                                    {/* </CTableFooter> */}
                                 </CTable>
                                 <CButton className=' mr-2' style={{ 'background': 'linear-gradient(90deg, #ffba00 0%, #ff6c00 100%)', 'border': 'none' }} onClick={() => previousPage()} disabled={!canPreviousPage}>
                                     Previous
@@ -104,8 +90,10 @@ const ManageProducts = () => {
                     </CCard>
                 </CCol>
             </CRow>
+            <ToastContainer position='top-right' />
+
         </>
     )
-
 }
-export default ManageProducts
+
+export default ManageUsers

@@ -43,10 +43,13 @@ const ResetPassword = () => {
                     }
                     // dispatch(loginUser(values));
                     const res = await axios.patch('http://localhost:5001/resetpassword',data)
-                    if (res.data.message == "Enter new Password") {
+                    if (!res.data.success) {
                         toast.error(res.data.message, {
                             autoClose: 2500,
                             position: "top-right",
+                            onClose:() => {
+                                navigate('/login')
+                            }
                         });
                     } else {
                         toast.success(res.data.message, {

@@ -9,6 +9,7 @@ const addProduct = async (data) => {
         formData.append("description", data.description)
         formData.append("categ", data.categ)
         formData.append("place",data.place)
+        formData.append("uploadby",data.uploadby)
         for (let i = 0; i < data.image.length; i++) {
             formData.append(`image`, data.image[i]);
         }

@@ -10,25 +10,16 @@ const Conformation = () => {
     window.onload = function () {
         window.location = "/allorder";
     }
-    // const dispatch = useDispatch();
-
     const { order } = useSelector(state => state.order);
     const { products } = useSelector(state => state.product)
-
-    // console.log("--------------")
-    // console.log("===================", JSON.parse(order.products));
 
     useEffect(() => {
         toast.success("Thank you. Your order has been received Successfully!")
     }, [])
-    // console.log("get order ", order)
     const data = JSON.parse(order.products)
-    // console.log("data ", data)
     var result = data.map((p) => {
         return products?.find((product) => p?.product_id == product.id)
     })
-    // console.log("+++++++++++", result)
-    // var total;
     const handlePrint = () => {
         window.print()
     }

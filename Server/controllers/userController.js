@@ -11,11 +11,26 @@ const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
 var User = db.user;
 const users = [];
-// function upsert(array, item) {
-//     const i = array.findIndex((_item) => _item.email === item.email);
-//     if (i > -1) array[i] = item;
-//     else array.push(item);
-// }
+const deleteUser = async (req, res) => {
+    try {
+        console.log("id is ", req.params.id)
+        const agent = await User.destroy({
+            where: { id: req.params.id }
+        })
+        console.log("agent is ", agent)
+        res.status(200).send({
+            id: req.params.id,
+            message: "User deleted successfully",
+            success: true
+        })
+    } catch (error) {
+        console.log("error in delete user ", error)
+        res.status(500).send({
+            message: "Error in deleting user",
+            success: false
+        })
+    }
+}
 
 const ResetPassword = async (req, res) => {
     try {
@@ -31,24 +46,24 @@ const ResetPassword = async (req, res) => {
                 success: false
             })
             // hashSync(req.body.data.password, 10)
-        // const oldObj = await User.update({ email: "lion@123gmail.com" }, { where: { id: 3 } })
-        } 
-        const newpass = hashSync(req.body.password,10);
-        console.log("new reset password sis ",newpass)
-        console.log("new reset password sis ",userExist.password)
+            // const oldObj = await User.update({ email: "lion@123gmail.com" }, { where: { id: 3 } })
+        }
+        const newpass = hashSync(req.body.password, 10);
+        console.log("new reset password sis ", newpass)
+        console.log("new reset password sis ", userExist.password)
 
         let comparePassword = await bcrypt.compare(req.body.password, userExist.password);
-        console.log("compare pass --------------------------------------------------",comparePassword)
-        if(comparePassword){
+        console.log("compare pass --------------------------------------------------", comparePassword)
+        if (comparePassword) {
             return res.status(200).send({
-                message:"Enter new Password",
-                success:true
+                message: "Enter new Password",
+                success: true
             })
         }
-        const data = await User.update({password:newpass},{where:{email:req.body.email}})
+        const data = await User.update({ password: newpass }, { where: { email: req.body.email } })
         return res.status(200).send({
-            message:"Password change successfully.",
-            success:true
+            message: "Password change successfully.",
+            success: true
         })
     }
     catch (error) {
@@ -156,27 +171,21 @@ var createUser = async (req, res) => {
 //Login
 var loginUser = async (req, res) => {
     try {
-        console.log("in backend login ", req.body.data);
-        console.log("in backend login ", req.body.data.email);
+        // console.log("in backend login ", req.body.data);
+        // console.log("in backend login ", req.body.data.email);
 
         const user = await User.findOne({ where: { email: req.body.data.email } });
-        // const user = await User.
-        // console.log("in backend login data ", user.password)
-
         if (req.body.data.loginVia) {
             if (!user) {
                 const res = await User.create(req.body.data)
-                console.log("login new user res ", user)
+                await User.update({ status: 1 }, { where: { email: req.body.data.email } })
             }
             const payload = {
                 name: req.body.data.name,
                 email: req.body.data.email
             }
-            // console.log("payload is ", payload)
             const token = jwt.sign(payload, "Random String", { expiresIn: "1m" })
-            // to set the generated token to header
             const val = 'Bearer ' + token;
-            console.log("val is token ", val)
             return res.status(200).json({
                 message: "Authenticated!,User Login Successfuly",
                 token: "Bearer " + token,
@@ -185,31 +194,26 @@ var loginUser = async (req, res) => {
         }
 
         if (user) {
-            console.log('exist ', user)
+            // console.log('exist ', user)
             await User.update({ status: 1 }, { where: { email: req.body.data.email } })
             let comparePassword = await bcrypt.compare(req.body.data.password, user.password);
-            // console.log(comparePassword);
             if (comparePassword) {
                 const payload = {
                     name: user.name,
                     email: user.email
                 }
-                // console.log("payload is ", payload)
                 const token = jwt.sign(payload, "Random String", { expiresIn: "1m" })
-
-                // to set the generated token to header
                 const val = 'Bearer ' + token;
-                console.log("val is token ", val)
                 return res.status(200).json({
                     // sucess: true,
                     message: "Authenticated!,User Login Successfuly",
                     token: "Bearer " + token,
                     status: true,
+                    role: user.role
                     // user: user.firstName
                 })
             }
             else {
-                // console.log("Password Incorrect");
                 return res.status(200).json({
                     message: 'Password Incorrect',
                     status: false
@@ -240,9 +244,7 @@ var dashboard = async (req, res) => {
         const d = await User.findAll();
 
         // console.log("data is ", d);
-        return res.status(200).json({
-            user: d
-        });
+        return res.status(200).json(d);
     } catch (error) {
         console.erroror("erroror:", error);
         return res.status(500).json({
@@ -251,20 +253,34 @@ var dashboard = async (req, res) => {
     }
 };
 
-var editUser = async (req, res) => {
+// var roleUpdate = async (req,res)
+var roleUpdate = async (req, res) => {
     try {
-        // console.log("in backend editUser")
-        const oldObj = await User.update({ email: "lion@123gmail.com" }, { where: { id: 3 } })
+        // console.log("in backend editUser ", req.body)
+        const oldObj = await User.update({ role: req.body.role }, { where: { id: req.params.id } })
         // console.log(oldObj);
-        return res.status(200).json(oldObj);
+        if (oldObj[0] == 1) {
+            return res.status(200).json({
+                message: "Role updated successfully.",
+                data:req.body,
+                success: 1
+            }
+            );
+        } else {
+            return res.status(200).json({
+                message: "Error in update role",
+                success: 0
+            })
+        }
     } catch (error) {
         console.log("erroror:", error);
         return res.status(500).json({
-            message: "Internal Server erroror editUser"
+            message: "Internal Server erroror editUser",
+            success: 0
         })
     }
 }
 module.exports = {
     createUser,
-    loginUser, dashboard, editUser, forgorPassword, ResetPassword
+    loginUser, dashboard, roleUpdate, forgorPassword, ResetPassword, deleteUser
 }

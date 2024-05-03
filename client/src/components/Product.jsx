@@ -14,7 +14,7 @@ import 'owl.carousel/dist/assets/owl.theme.default.css';
 // import p8 from '../img/product/p8.jpg'
 import { getAllProduct } from '../RTK/Slice/productSlice';
 import { NavLink } from 'react-router-dom';
-import { addToCart } from './Single_Product';
+// import { addToCart } from './SingleProduct';
 // import prev from '../img/banner/prev.png'
 // import next from '../img/banner/next.png'
 

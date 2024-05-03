@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 // import s_p1 from '../img/category/s-p1.jpg';
 // import checkimg from '../img/product/p11.jpg';
 // import checkimg2 from '../img/product/p11_1.jpg';
@@ -6,30 +6,36 @@ import React, { useState, useEffect } from 'react'
 import OwlCarousel from 'react-owl-carousel';
 import { NavLink } from 'react-bootstrap';
 import RelatedProducted from './RelatedProduct';
-import {  useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-// import { getProductById } from '../RTK/Slice/productSlice';
+import { getProductById } from '../RTK/Slice/productSlice';
 // import { object } from 'yup';
 // import { useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getProductById } from '../RTK/Slice/productSlice';
 // import { getAllCate } from '../RTK/Slice/cateSlice';
 
-const Single_Product = () => {
+const SingleProduct = () => {
 
     const dispatch = useDispatch();
     // const navigate = useNavigate()
     let { id } = useParams();
     // console.log("params log",id)
-
-    useEffect(() => {
-        dispatch(getProductById(id));
-    }, [dispatch, id])
-
+    const isMounted = useRef(true)
+    const [imgArray, setImgArray] = useState([])
     const singleProduct = useSelector(state => state.product);
+    const fetchData = async () => {
+        await dispatch(getProductById(id));
+        setImgArray(singleProduct.product.image);
+    };
+    useEffect(() => {    
+        fetchData();
+    }, [dispatch, id]);
+
+    const images = singleProduct.product ? singleProduct.product.image : []
+    console.log("single product", singleProduct.product.image)
     const productID = singleProduct.product.id;
-    // console.log("single product ",singleProduct)
+
     const [Quantity, setQuantity] = useState(1);
 
     const handleIncrement = () => {
@@ -45,19 +51,16 @@ const Single_Product = () => {
             setQuantity(newValue);
         }
     }
-
-    useEffect(()=>{
-        window.scrollTo(0,0)
-    },[]);
-
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, []);
     // ---------------------------add to cart--------------------------------------------------------
     const [cart, setCart] = useState(JSON.parse(sessionStorage.getItem('cart')) ? JSON.parse(sessionStorage.getItem('cart')) : []);
     // console.log("initial cart", JSON.stringify(sessionStorage.getItem('TotalQnty')));
-    if(sessionStorage.getItem('TotalQnty') == null){
-        sessionStorage.setItem('TotalQnty',0)
+    if (sessionStorage.getItem('TotalQnty') == null) {
+        sessionStorage.setItem('TotalQnty', 0)
     }
-    const totalQnty =  JSON.parse(sessionStorage.getItem('TotalQnty'));
-
+    const totalQnty = JSON.parse(sessionStorage.getItem('TotalQnty'));
     // console.log('tt ',totalQnty)
     const addToCart = (productID) => {
         if (cart.find(item => item.product_id === productID)) {
@@ -69,7 +72,7 @@ const Single_Product = () => {
             };
             // console.log("NEW iTEM",newItem)
             setCart([...cart, newItem]);
-            sessionStorage.setItem('TotalQnty',totalQnty+Quantity)
+            sessionStorage.setItem('TotalQnty', totalQnty + Quantity)
             toast.success("Product added Succesfully !");
         }
     };
@@ -77,7 +80,7 @@ const Single_Product = () => {
     // const data = sessionStorage.getItem('cart');
     // console.log("session data ", data);
     // ----------------------------------------------------------------------------------------------
-
+    const [isLoading, setIsLoading] = useState(true);
     return (
         <div>
             <section className="banner-area organic-breadcrumb">
@@ -86,9 +89,12 @@ const Single_Product = () => {
                         <div className="col-first">
                             <h1>Product Details Page</h1>
                             <nav className="d-flex align-items-center">
-                                <NavLink to='/'>Home<span className="lnr lnr-arrow-right" /></NavLink>
-                                <NavLink to='/procategory'>Shop Category<span className="lnr lnr-arrow-right" /></NavLink>
-                                <NavLink>product-details</NavLink>
+                                <NavLink to={'/'}>Home<span className="lnr lnr-arrow-right" /></NavLink>
+                                <NavLink>Shop<span className="text-light lnr lnr-arrow-right" /></NavLink>
+                                <NavLink >product-details</NavLink>
+                                {/* <NavLink className='nav-link' to={'/'}>Home</NavLink>
+                                <div className='text-light lnr lnr-arrow-right'></div>
+                                <NavLink className='nav-link' to={'/contact'}>Contact</NavLink> */}
                             </nav>
                         </div>
                     </div>
@@ -109,11 +115,32 @@ const Single_Product = () => {
                                     nav={false}
                                     dots={true}
                                 >
-                                    {singleProduct.product.image?.map((item) => (
-                                        <img className='img-fluid' src={process.env.REACT_APP_IMG_URL + item} alt='single image' 
-                                        loading='lazy'
+                                    {/* {singleProduct.products} */}
+                                    {/*<div className="single-prd-item">
+                                        <img className="img-fluid" src={process.env.REACT_APP_IMG_URL + singleProduct?.products?.image[0]} alt />
+                                        <img className="img-fluid" src={checkimg2} alt />
+                                    </div>
+                                    <div className="single-prd-item">
+                                        <img className="img-fluid" src={process.env.REACT_APP_IMG_URL + singleProduct?.products?.image[1]} alt />
+                                        <img className="img-fluid" src={checkimg} alt />
+                                    </div>
+                                    <div className="single-prd-item">
+                                        <img className="img-fluid" src={process.env.REACT_APP_IMG_URL + singleProduct?.products?.image[2]} alt />
+                                        <img className="img-fluid" src={checkimg3} alt />
+                                    </div> */}
+                                    {images?.map((item, index) => {
+                                        return (
+                                            (
+                                        <img
+                                            key={index}
+                                            className='img-fluid'
+                                            src={`${process.env.REACT_APP_IMG_URL + item}?${new Date().getTime()}`}
+                                            alt="Dynamic Image"
+                                            loading='lazy'
                                         />
-                                    ))}
+                                    )
+                                        )
+                                    })}
                                 </OwlCarousel>
                             </div>
                             <div className="col-lg-5 offset-lg-1">
@@ -121,8 +148,8 @@ const Single_Product = () => {
                                     <h3>{singleProduct.product.name}</h3>
                                     <h2>₹{singleProduct.product.price}</h2>
                                     <ul className="list">
-                                        <li><span>Category</span> : {singleProduct.product.categ}</li>
-                                        <li><span>Availibility</span> : In Stock</li>
+                                        <li><a><span>Category</span> : {singleProduct.product.categ}</a></li>
+                                        <li><a ><span>Availibility</span> : In Stock</a></li>
                                     </ul>
                                     <p>{singleProduct.product.description}</p>
                                     <div className="product_count">
@@ -152,9 +179,9 @@ const Single_Product = () => {
                                         {/* <Link className="primary-btn nav-link" to={`/card/${singleProduct.product.id}`}>Add to Cart</Link> */}
                                         {/* <a className="icon_btn" href="#"><i className="lnr lnr lnr-diamond" /></a> */}
                                         {/* <a className="icon_btn" href="#"><i className="lnr lnr lnr-heart" /></a> */}
-                                        <button className='primary-btn' style={{'border':'none'}}
+                                        <button className='primary-btn' style={{ 'border': 'none' }}
                                             onClick={() => addToCart(productID)}>Add to Cart</button>
-                                            <ToastContainer position='top-right'/>
+                                        <ToastContainer position='top-right' />
                                     </div>
                                 </div>
                             </div>
@@ -284,4 +311,4 @@ const Single_Product = () => {
     )
 }
 
-export default Single_Product
+export default SingleProduct

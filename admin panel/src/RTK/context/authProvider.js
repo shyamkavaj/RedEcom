@@ -6,6 +6,7 @@ export const useAuth = () => useContext(AuthContext)
 
 const AuthProvider = ({ children}) => {
     const loginToken = (token,role) => {
+        console.log("login token role ",role)
         localStorage.setItem('tokenAuth',token);
         localStorage.setItem('role',role);
     } 

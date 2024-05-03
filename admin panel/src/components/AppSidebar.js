@@ -22,6 +22,7 @@ import { getAllOrders } from 'src/RTK/slice/orderSlice'
 import { getAllFaq } from 'src/RTK/slice/faqSlice'
 import logo from 'src/assets/images/logo.png'
 const AppSidebar = () => {
+  // window.location.reload()
   // const dispatch = useDispatch()
   // const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   // const sidebarShow = useSelector((state) => state.sidebarShow)

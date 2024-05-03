@@ -19,6 +19,7 @@ import { DocsExample } from 'src/components'
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { jwtDecode } from 'jwt-decode'
 
 import { addProduct } from '../../RTK/slice/productSlice'
 // import { getAllCate } from 'src/RTK/slice/cateSlice';
@@ -30,7 +31,7 @@ const AddProduct = () => {
 
   const [subcategory, setSubcategory] = useState([]);
   const inputFile = useRef(null);
-  const {error} = useSelector( state => state.product)
+  const { error } = useSelector(state => state.product)
   // console.log("error ",error)
   const handleSelect = (event) => {
     // console.log("id is ", event.target.value)
@@ -38,20 +39,9 @@ const AddProduct = () => {
     const sub = subcate.filter((item) => item.category_id === parseInt(event.target.value));
     // console.log("sub ", sub)
     setSubcategory(sub)
-    // findSubCate(event.target.value)
-    // console.log("sub-cate ", subcategory)
   }
-
-  // const findSubCate = (id) => {
-  //   const sub = subcate.filter((item) => item.category_id === parseInt(id));
-  //   console.log("all ",sub)
-  //   setSubcategory(sub);
-  // }
-  // useEffect(() => {
-  //   console.log("cate ", subcategory)
-  // }, [subcategory]) // Dependency array should contain subcategory, not handleSelect
-
-  // const allCategory = category.categories
+  const [TokenData,setTokendata] = useState(jwtDecode(localStorage.getItem('tokenAuth')))
+  console.log("Token data is ",TokenData)
   const initialvalues = {
     name: "",
     price: "",
@@ -59,10 +49,11 @@ const AddProduct = () => {
     image: [],
     subcateId: "",
     categ: "",
-    place: ""
+    place: "",
+    uploadby: TokenData.email
   };
 
-  
+
   const productSchema = Yup.object({
     name: Yup.string().min(3, 'enter proper product name').required('Enter product name'),
     price: Yup.number().min(1, 'value must greater than 0').required('Enter product price'),
@@ -77,18 +68,10 @@ const AddProduct = () => {
     initialValues: initialvalues,
     validationSchema: productSchema,
     enableReinitialize: true,
-    onSubmit:(values, { setSubmitting, resetForm }) => {
-      // console.log("values before ", values.image)
-      // console.log("before ",imgRef)
-      // console.log("add prod value ",values)
+    onSubmit: (values, { setSubmitting, resetForm }) => {
       dispatch(addProduct(values));
-      // if(error){
-      //   alert("invalid user");
-      // }
-      // values.image = []
       setSubmitting(false);
       inputFile.current.value = "";
-      // handleReset();
       resetForm();
     },
 
@@ -197,6 +180,28 @@ const AddProduct = () => {
             <option value={"Week deal"}>Week deal</option>
 
           </CFormSelect>
+        </CCol>
+        <CCol md={4} style={{ 'marginBottom': '6px' }}>
+          <CFormLabel htmlFor="validationDefaultUsername">Upload By</CFormLabel>
+          <CInputGroup hasValidation>
+            {/* <CInputGroupText id="inputGroupPrepend02">₹</CInputGroupText> */}
+            <CFormInput
+              type="text"
+              id="validationDefaultUsername"
+              // name='price'
+              onChange={handleChange}
+              value={TokenData.email}
+              disabled
+              onBlur={handleBlur}
+              // placeholder='Enter Price'
+              aria-describedby="inputGroupPrepend02"
+              // required
+               // Set minimum value to 0
+            />
+          </CInputGroup>
+          {errors.uploadby && touched.uploadby ? (
+            <p className="form-error text-danger">{errors.price}</p>
+          ) : null}
         </CCol>
         <CCol md={12} style={{ 'marginBottom': '6px' }}>
           {/* <CFormInput type="text" id="validationDefault03" label="Description" required /> */}

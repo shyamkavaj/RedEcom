@@ -35,10 +35,11 @@ app.post('/signup', userCtrl.createUser);
 app.post('/login', userCtrl.loginUser);
 app.post('/forgotPassword',userCtrl.forgorPassword)
 app.patch('/resetpassword',userCtrl.ResetPassword)
+app.delete('/deleteuser/:id', userCtrl.deleteUser)
 
 // app.get('/dashboard',verifyToken,userCtrl.dashboard)
 app.get('/getAllUser', userCtrl.dashboard)
-app.patch('/edit', verifyToken, userCtrl.editUser)
+app.patch('/roleupdate/:id', userCtrl.roleUpdate)
 
 // app.post('/api/google-login',userCtrl.googleLogin)
 

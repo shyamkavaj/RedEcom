@@ -14,7 +14,7 @@ import Navbar from "./components/Navbar";
 // import RelatedProduct from './components/RelatedProduct';
 // import Footer from './components/Footer';
 import Shop_Category from './components/Shop_Category';
-import Single_Product from './components/Single_Product';
+// import Single_Product from './components/Single_Product';
 import CheckOut from './components/CheckOut';
 import Card from './components/Card';
 import Conformation from './components/Conformation';
@@ -33,6 +33,7 @@ import { getAllFaq } from './RTK/Slice/faqSlice';
 import OrderHistory from './components/OrderHistory';
 import { getAllOrder } from './RTK/Slice/orderSlice';
 import ResetPassword from './components/ResetPassword';
+import SingleProduct from './components/SingleProduct';
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -78,7 +79,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/procategory" element={<Shop_Category />} />
           <Route path="/cart" element={<Card />} />
-          <Route path="/productdetails/:id" element={<Single_Product />} />
+          <Route path="/productdetails/:id" element={<SingleProduct />} />
           <Route path="/resetpassword/:email" element={<ResetPassword/>}/>
           <Route element={<PrivateRoute />}>
             <Route path='/checkout' element={<CheckOut />} />

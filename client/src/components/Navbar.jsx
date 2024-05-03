@@ -121,7 +121,7 @@ const Navbar = () => {
                                                 <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" onMouseOut={() => {
                                                     setShow1(false)
                                                     setShow2(false)
-                                                }}>Check</a>
+                                                }}>shop</a>
                                                 <ul className="dropdown-menu" >
                                                         { categories?.map((category) => {
                                                             const filteredSubcategories = subcate?.filter((subcat) => subcat.category.name === category.name);
@@ -142,22 +142,7 @@ const Navbar = () => {
                                                             );
                                                         })}
 
-                                                    <li className={`nav-item-in submenu dropdown out-hover ${location.pathname === "/procategory" || location.pathname === "/checkout" ? "active" : ""}`} onClick={handleClick2} >
-                                                        <NavLink href="#" className="nav-out dropdown-toggle"   >Shopabc</NavLink>
-                                                        {
-                                                            show2 ? (
-                                                                <ul className="dropdown-menu" style={{ 'marginLeft': '200px', 'top': '0' }} >
-                                                                    <li className="nav-item"  >
-                                                                        <NavLink className="nav-link-in in" to="/procategory">shop category abc</NavLink>
-                                                                    </li>
-                                                                    <li className="nav-item" >
-                                                                        <NavLink className="nav-link-in in" to="/procategory">product detail abc</NavLink>
-                                                                    </li>
-                                                                    {/* <li className="nav-item" ><a className="nav-link" style={{background:'#fff',color:'#ffba00'}} href="single-product.html">Product Details abc</a></li> */}
-                                                                </ul>
-                                                            ) : (<></>)
-                                                        }
-                                                    </li>
+                                                    
 
                                                     {/* <li className="nav-item">
                                                         <NavLink className="nav-link" to="/procategory"> Check Shop Category</NavLink>
@@ -166,7 +151,7 @@ const Navbar = () => {
                                                 </ul>
                                             </li>
 
-                                            <li className={`nav-item submenu dropdown ${location.pathname === "/procategory" || location.pathname === "/checkout" ? "active" : ""}`} >
+                                            {/* <li className={`nav-item submenu dropdown ${location.pathname === "/procategory" || location.pathname === "/checkout" ? "active" : ""}`} >
                                                 <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Shop</a>
                                                 <ul className="dropdown-menu">
                                                     <li className="nav-item">
@@ -174,7 +159,7 @@ const Navbar = () => {
                                                     </li>
                                                     <li className="nav-item"><a className="nav-link" href="single-product.html">Product Details</a></li>
                                                 </ul>
-                                            </li>
+                                            </li> */}
                                             {/* <li className="nav-item submenu dropdown">
                                                 <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Blog</a>
                                                 <ul className="dropdown-menu">

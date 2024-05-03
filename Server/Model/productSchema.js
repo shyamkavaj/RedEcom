@@ -28,8 +28,10 @@ module.exports = (sequelize,DataTypes) => {
             type:DataTypes.ENUM,
             values:["Regular","Hot deal","Main carousel","Week deal"],
             defaultValue:"Regular"
-            // defaultValue:"regular"
         },
+        uploadby:{
+            type:DataTypes.STRING
+        }
     })
     return Product;
 }

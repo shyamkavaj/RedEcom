@@ -3,7 +3,7 @@ import login_img from '../img/login.jpg';
 import { NavLink, useNavigate } from 'react-router-dom/dist';
 import { Formik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
-import {  useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 // import { loginUser } from '../RTK/Slice/userSlice'
 import * as Yup from 'yup';
 // import { jwtDecode } from "jwt-decode";
@@ -55,11 +55,11 @@ const Login = () => {
                     window.location.reload();
                 }
             })
-        } else if(msg ==="Password Incorrect" || msg === "User does not exist"){
-            toast.error(msg,{
-                autoClose:2000,
-                position:"top-right",
-                onClose:() => {
+        } else if (msg === "Password Incorrect" || msg === "User does not exist") {
+            toast.error(msg, {
+                autoClose: 2000,
+                position: "top-right",
+                onClose: () => {
                     window.location.reload();
                 }
             })
@@ -90,7 +90,14 @@ const Login = () => {
             const res = await axios.post('http://localhost:5001/forgotPassword', { email })
             console.log("res forgot is ", res.data)
             if (res.data.success === false) {
-                alert(`'${email} Doesn't Exist'`)
+                toast.error(res.data.message, {
+                    autoClose: 2500,
+                    position: "top-right",
+                    onClose: () => {
+                        navigate('/login')
+                    }
+                });
+                // alert(`'${email} Doesn't Exist'`)
                 setModalShow(false)
             }
             else {
@@ -146,7 +153,7 @@ const Login = () => {
                 validationSchema={DisplayingErrorMessagesSchema}
                 onSubmit={(values, { resetForm, setSubmitting, props }) => {
                     dispatch(loginUser(values));
-                    
+
                     resetForm({});
                     setSubmitting(false);
                 }}

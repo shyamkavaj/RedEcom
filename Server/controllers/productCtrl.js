@@ -145,7 +145,6 @@ var updateProductDetailById = async (req, res) => {
     }
 }
 var updateProductImgById = async (req, res) => {
-    // console.log("req.body ",req.body)
     try {
 
         const oldImg = await Product.findOne({
@@ -153,21 +152,14 @@ var updateProductImgById = async (req, res) => {
                 id: req.params.id
             }
         })
-        // console.log("oldImg is ", oldImg)
         var imgArr = [];
         JSON.parse(oldImg.dataValues.image).forEach(element => {
-            // console.log("img ",element)
             imgArr.push(element)
         })
-        // console.log("img Arr before ",imgArr)
-        // console.log("filename ",req.files[0])
         req.files.forEach(element => {
             // console.log("ele ",element)
             imgArr.push(element.filename)
         })
-        // imgArr.push(req.files[0].filename)
-        // console.log("img Array after",imgArr)
-        // console.log("obj = ",oldImg.dataValues)
         const newUpdatedObj = {
             ...oldImg,
             image:imgArr

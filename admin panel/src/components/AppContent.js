@@ -6,6 +6,7 @@ import { CContainer, CSpinner } from '@coreui/react'
 import routes from '../routes'
 
 const AppContent = () => {
+  const role = localStorage.getItem('role')
   return (
     <CContainer lg>
       <Suspense fallback={<CSpinner color="primary" />}>
@@ -23,7 +24,8 @@ const AppContent = () => {
               )
             )
           })}
-          <Route path="/" element={<Navigate to="dashboard" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* {role !== "admin" ? <Route path='/' element={<Navigate to="products" />} /> : <Route path="/" element={<Navigate to="dashboard" replace />} />} */}
         </Routes>
       </Suspense>
     </CContainer>

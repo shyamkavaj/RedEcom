@@ -86,24 +86,9 @@ export const COLUMNS = [
                 },
             })
             const data = JSON.parse(JSON.parse(row?.row?.original.products))
-            console.log("rew ", data)
             var result = data?.map((p) => {
                 return products?.find((product) => p?.product_id == product.id)
             })
-            console.log("result 45 ",result)
-            // const d = JSON.parse(row.row.original.products);
-            // let result;
-            // if (Array.isArray(d)) {
-            //     result = d?.map((product, index) => {
-            //         // console.log('pro ', product);
-            //         return products?.find((p) => p.id == product.product_id);
-            //     });
-            //     console.log("res res res ", result);
-            // } else {
-            //     console.log("type of d is ",typeof(d));
-            //     console.log("Error: d is not an array");
-            // }
-
             return (
                 <>
                     <div className="flex">
@@ -176,30 +161,6 @@ export const COLUMNS = [
                                                 disabled
                                             />
                                         </CCol>
-
-                                        {/* <CCol style={{ 'marginBottom': '6px' }}>
-                                        <CFormLabel htmlFor="validationDefaultUsername">Price</CFormLabel>
-                                        <CInputGroup hasValidation>
-                                            <CInputGroupText id="inputGroupPrepend02">₹</CInputGroupText>
-                                            <CFormInput
-                                                type="number"
-                                                id="validationDefaultUsername"
-                                                name=''
-                                                onChange={handleChange}
-                                                value={values.price}
-                                                // value={edit ? values.price : row.row.original.price}
-                                                onBlur={handleBlur}
-                                                placeholder='Enter Price'
-                                                aria-describedby="inputGroupPrepend02"
-                                                required
-                                                // min="1" // Set minimum value to 0
-                                                disabled={!edit}
-                                            />
-                                        </CInputGroup>
-                                        {errors.price && touched.price ? ( 
-                                            <p className="form-error text-danger">{errors.price}</p>
-                                        ) : null}
-                                    </CCol> */}
                                     </CRow>
                                     <CRow>
                                         <CCol md={4} style={{ 'marginBottom': '6px' }} >
@@ -280,15 +241,7 @@ export const COLUMNS = [
                                                 <option value="pending">pending</option>
                                                 <option value="processing">processing</option>
                                                 <option value="delivered">delivered</option>
-                                                {/* {
-                                                    categories?.map((item) => (
-                                                        <option key={item.id} value={item.id} >{item.name}</option>
-                                                    ))
-                                                } */}
                                             </CFormSelect>
-                                            {/* {errors.categ && touched.categ ? (
-                                                <p className="form-error text-danger">{errors.categ}</p>
-                                            ) : null} */}
                                         </CCol>
                                     </CRow>
                                     <CRow>
