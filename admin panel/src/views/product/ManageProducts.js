@@ -13,9 +13,10 @@ const ManageProducts = () => {
     // const user = 
     const products = useSelector((state) => state.product.products)
     const role = localStorage.getItem('role')
-    // const p = role == 'admin' ? products : products.filter((item) => item.uploadby == user)
+    const p = role == 'admin' ? products : products?.filter((item) => item.uploadby == user)
+    console.log("product list ",p)
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => products, [products])    
+    const data = useMemo(() => p, [p])    
     const { getTableProps, getTableBodyProps, headerGroups, page, state, setGlobalFilter, prepareRow, nextPage, previousPage, canNextPage, canPreviousPage, pageOptions, setPageSize } = useTable({
         columns,
         data,
