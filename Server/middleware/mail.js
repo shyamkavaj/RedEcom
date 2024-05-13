@@ -9,7 +9,7 @@ const sendEmail = (receivers,subject,message)=>{
         service:'gmail',
         auth:{
             user:'shyamkava783@gmail.com',
-            pass: 'vxecqpxvzcvbvmte'
+            pass: 'vxecqpxvzvbvmte'
         }
     });
     
