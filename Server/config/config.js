@@ -32,9 +32,9 @@ db.staff = require('../Model/staffMember')(sequelize, DataTypes);
 db.subcategory = require('../Model/subcateSchema')(sequelize, DataTypes);
 
 
-// db.sequelize.sync({alter: true}).then(() =>{
-//     console.log("Table created");
-// });
+db.sequelize.sync({alter: true}).then(() =>{
+    console.log("Table created");
+});
 
 db.category.hasMany(db.subcategory,{
     foreignKey: 'category_id',
